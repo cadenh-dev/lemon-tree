@@ -1,0 +1,10 @@
+{
+  "enabledMcpjsonServers": ["sct"],
+  "permissions": {
+    "deny": [
+      "Agent", "Task", "TaskStop", "Bash", "Monitor", "Edit", "MultiEdit", "Write", "NotebookEdit", "Read", "Glob", "Grep",
+      "WebFetch", "WebSearch", "Skill", "SendMessage", "ListAgents", "CronCreate", "CronDelete", "CronList",
+      "ScheduleWakeup", "RemoteTrigger", "PushNotification", "EnterWorktree", "ExitWorktree", "DesignSync", "ReportFindings"
+    ]
+  }
+}

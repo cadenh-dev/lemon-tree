@@ -1,0 +1,16 @@
+{
+  "agtop": {
+    "url": "https://github.com/cadenh-dev/agtop.git",
+    "sha": "c13956152d5e0f3ca512e93bae7078d5b0f2d40c",
+    "path": "agtop"
+  },
+  "subagentclassifiertoolkit": {
+    "url": "https://github.com/cadenh-dev/SubagentClassifierToolkit.git",
+    "sha": "d009ae4968b6c8e6e648a3031ced2122bd24e5b8",
+    "path": "subagentclassifiertoolkit"
+  },
+  "globalSctForkBase": {
+    "url": "https://github.com/cadenh-dev/global.sct",
+    "sha": "ab5b00106f0a47bcd5dd308a5576bbb464b27190"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "lemon-tree",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pins": "bun scripts/pins.ts",
+    "pins:check": "bun scripts/pins.ts --check"
+  }
+}

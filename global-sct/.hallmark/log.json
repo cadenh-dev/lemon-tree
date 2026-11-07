@@ -1,0 +1,26 @@
+[
+ {
+  "scope": "app",
+  "shape": "app screen",
+  "theme": "terminal",
+  "axes": "left-biased dense workbench",
+  "hero": "none",
+  "nav": "existing app shell and sharing tabs",
+  "footer": "none",
+  "imagery": "product UI",
+  "photos": [],
+  "entry": "2026-10-24 issue 14 sharing UI",
+  "fingerprint": "app/relay/queue/tables",
+  "sections": [
+   "connection",
+   "pairing",
+   "queue",
+   "activity"
+  ],
+  "signature": "relay delivery queue",
+  "waived": [],
+  "prompt": "Build issue 14 secret sharing and delivery activity UI",
+  "date": "2026-10-25",
+  "mode": "build"
+ }
+]

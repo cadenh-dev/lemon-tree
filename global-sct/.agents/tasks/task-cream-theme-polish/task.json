@@ -1,0 +1,7 @@
+{
+  "task_id": "task-cream-theme-polish",
+  "task_description": "Restart of the canceled Cream theme polish with the current AGENTS.md rules. Cream accent tokens are dark forest green with cream text on green fills (wordmark, primary button); all other Cream text and lines are black. Add a 4px accent rule above the active tab (header nav and sharing tabs) with the 1px ink rule as the active-state marker and no green text. Add --color-input-border (Terminal at least 3:1 on paper, Cream high-contrast) for input borders. Update the docs/theme.md contrast table and regenerate the Cream screenshots. Add exactly two approved tests (theme preference survives restart; --interactive argument parsing). Do not edit AGENTS.md or the decision tables. Do not change the Cream default, the Storage setting, or SIGTERM behavior. Do not commit.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

@@ -1,0 +1,7 @@
+{
+  "task_id": "task-c8d-transport-receipt",
+  "task_description": "Phase 2 Task 5 (C8d): add src/shared/transport.ts with the shared transport and receipt contract, add Sharing methods to prepare, preview, accept, and verify a sealed envelope addressed by device ID, map relay delivery states and receipts to the contract in the main process only, and add two approved tests.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

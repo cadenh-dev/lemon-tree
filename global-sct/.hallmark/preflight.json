@@ -1,0 +1,23 @@
+{
+  "scanned": "2026-10-24",
+  "findings": {
+    "fonts": "Martian Mono variable font",
+    "palette": "OKLCH role tokens in src/renderer/src/styles.css",
+    "motion": "GSAP state motion with reduced-motion fallbacks",
+    "spacing": "Existing square Terminal app system",
+    "framework": "Electron, React, and TypeScript"
+  },
+  "preserve": [
+    "Terminal theme (Terminal and Cream variants)",
+    "Martian Mono",
+    "OKLCH role tokens",
+    "square surfaces",
+    "existing app shell"
+  ],
+  "introduce": [
+    "relay pairing controls",
+    "relay transfer controls",
+    "delivery activity queue",
+    "cached status labels"
+  ]
+}

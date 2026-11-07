@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  // SpacetimeDB requires these options to build the module.
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ES2021", "DOM"],
+    "module": "ESNext",
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}

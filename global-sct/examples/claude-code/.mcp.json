@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sct": {
+      "command": "${HOME}/.local/bin/sct",
+      "args": ["mcp"]
+    }
+  }
+}

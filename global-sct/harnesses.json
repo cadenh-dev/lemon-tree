@@ -1,0 +1,230 @@
+[
+  {
+    "id": "opencode",
+    "displayName": "OpenCode",
+    "binary": "opencode",
+    "installHint": "npm install -g @opencode/cli",
+    "knownVersion": "2.2.6",
+    "versionArgs": ["--version"],
+    "helpArgs": ["run", "--help"],
+    "requiredHelpTokens": ["--format", "--model"],
+    "defaultProtocol": "acp-stdio",
+    "acp": { "mode": "native", "command": "opencode", "args": ["acp"] },
+    "headless": { "argsTemplate": ["run", "--format", "json", "{prompt}"], "output": "json" },
+    "env": {
+      "cloud": { "OPENCODE_CONFIG_CONTENT": { "json": { "model": "{model}" } } },
+      "lemonadeLocal": {
+        "OPENCODE_CONFIG_CONTENT": { "json": {
+          "provider": { "lemonade": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "Lemonade",
+            "options": { "baseURL": "{baseUrl}", "apiKey": "lemonade" },
+            "models": { "{model}": { "name": "{model}" } }
+          } },
+          "model": "lemonade/{model}"
+        } }
+      }
+    },
+    "lemonadeArgs": [],
+    "lemonadeBaseUrlStyle": "openai-v1",
+    "instruction": { "fileName": "AGENTS.md", "args": [] },
+    "mcp": {
+      "method": "env-config",
+      "argsTemplate": [],
+      "env": { "OPENCODE_CONFIG_CONTENT": { "json": { "mcp": { "lemon-tree": { "type": "remote", "url": "{mcpUrl}" } } } } }
+    },
+    "unverified": ["env.lemonadeLocal.OPENCODE_CONFIG_CONTENT.provider", "mcp.env.OPENCODE_CONFIG_CONTENT.mcp"],
+    "license": "MIT",
+    "benefits": {
+      "autonomy": "high",
+      "tokenEfficiency": "medium",
+      "diffStrategy": "search-replace",
+      "subagentSupport": true,
+      "lspIntegration": true,
+      "localModelFriendly": true,
+      "bestFor": ["LSP-checked refactors", "any OpenAI-compatible or local model"],
+      "tradeoffs": "Model quality decides results; config is JSON-heavy."
+    }
+  },
+  {
+    "id": "claude-code",
+    "displayName": "Claude Code",
+    "binary": "claude",
+    "installHint": "npm install -g @anthropic-ai/claude-code",
+    "knownVersion": "2.1.317",
+    "versionArgs": ["--version"],
+    "helpArgs": ["--help"],
+    "requiredHelpTokens": ["--print", "--output-format", "--verbose", "--mcp-config", "--model"],
+    "defaultProtocol": "acp-stdio",
+    "acp": { "mode": "adapter", "command": "npx", "args": ["-y", "@agentclientprotocol/claude-agent-acp"] },
+    "headless": { "argsTemplate": ["-p", "{prompt}", "--output-format", "stream-json", "--verbose"], "output": "stream-json" },
+    "env": {
+      "cloud": { "ANTHROPIC_API_KEY": "{secret:ANTHROPIC_API_KEY}", "ANTHROPIC_MODEL": "{model}" },
+      "lemonadeLocal": { "ANTHROPIC_BASE_URL": "{baseUrl}", "ANTHROPIC_AUTH_TOKEN": "lemonade", "ANTHROPIC_MODEL": "{model}" }
+    },
+    "lemonadeArgs": [],
+    "lemonadeBaseUrlStyle": "root",
+    "instruction": { "fileName": "CLAUDE.md", "args": [] },
+    "mcp": {
+      "method": "cli-flag",
+      "argsTemplate": ["--mcp-config", { "json": { "mcpServers": { "lemon-tree": { "type": "http", "url": "{mcpUrl}" } } } }],
+      "env": {}
+    },
+    "unverified": [],
+    "license": "proprietary",
+    "benefits": {
+      "autonomy": "high",
+      "tokenEfficiency": "heavy",
+      "diffStrategy": "search-replace",
+      "subagentSupport": true,
+      "lspIntegration": false,
+      "localModelFriendly": false,
+      "bestFor": ["deep repository exploration with subagents", "multi-step planning"],
+      "tradeoffs": "Large system prompt; small local models struggle with it."
+    }
+  },
+  {
+    "id": "aider",
+    "displayName": "Aider",
+    "binary": "aider",
+    "installHint": "python -m pip install aider-install && aider-install",
+    "knownVersion": null,
+    "versionArgs": ["--version"],
+    "helpArgs": ["--help"],
+    "requiredHelpTokens": ["--message", "--yes-always", "--read", "--no-auto-commits", "--no-pretty"],
+    "defaultProtocol": "headless-json",
+    "acp": { "mode": "none", "command": null, "args": [] },
+    "headless": { "argsTemplate": ["--message", "{prompt}", "--yes-always", "--no-auto-commits", "--no-pretty"], "output": "text" },
+    "env": {
+      "cloud": { "OPENAI_API_KEY": "{secret:OPENAI_API_KEY}", "AIDER_MODEL": "{model}" },
+      "lemonadeLocal": { "OPENAI_API_BASE": "{baseUrl}", "OPENAI_API_KEY": "lemonade", "AIDER_MODEL": "openai/{model}" }
+    },
+    "lemonadeArgs": [],
+    "lemonadeBaseUrlStyle": "openai-v1",
+    "instruction": { "fileName": "CONVENTIONS.md", "args": ["--read", "CONVENTIONS.md"] },
+    "mcp": { "method": "none", "argsTemplate": [], "env": {} },
+    "unverified": ["knownVersion", "requiredHelpTokens", "env.cloud.AIDER_MODEL", "env.lemonadeLocal.AIDER_MODEL"],
+    "license": "Apache-2.0",
+    "benefits": {
+      "autonomy": "low",
+      "tokenEfficiency": "high",
+      "diffStrategy": "unified-diff",
+      "subagentSupport": false,
+      "lspIntegration": false,
+      "localModelFriendly": true,
+      "bestFor": ["fast, token-frugal edits", "small local models"],
+      "tradeoffs": "No ACP or MCP; plain-text output only."
+    }
+  },
+  {
+    "id": "codex",
+    "displayName": "Codex CLI",
+    "binary": "codex",
+    "installHint": "npm install -g @openai/codex",
+    "knownVersion": "0.166.0",
+    "versionArgs": ["--version"],
+    "helpArgs": ["exec", "--help"],
+    "requiredHelpTokens": ["--json", "--config", "--model"],
+    "defaultProtocol": "acp-stdio",
+    "acp": { "mode": "adapter", "command": "npx", "args": ["-y", "@agentclientprotocol/codex-acp"] },
+    "headless": { "argsTemplate": ["exec", "--json", "--model", "{model}", "{prompt}"], "output": "jsonl" },
+    "env": {
+      "cloud": { "OPENAI_API_KEY": "{secret:OPENAI_API_KEY}" },
+      "lemonadeLocal": { "LEMON_TREE_LOCAL_KEY": "lemonade" }
+    },
+    "lemonadeArgs": [
+      "-c", "model_provider=\"lemonade\"",
+      "-c", "model_providers.lemonade.name=\"Lemonade\"",
+      "-c", "model_providers.lemonade.base_url=\"{baseUrl}\"",
+      "-c", "model_providers.lemonade.env_key=\"LEMON_TREE_LOCAL_KEY\"",
+      "-c", "model_providers.lemonade.wire_api=\"chat\""
+    ],
+    "lemonadeBaseUrlStyle": "openai-v1",
+    "instruction": { "fileName": "AGENTS.md", "args": [] },
+    "mcp": { "method": "config-override", "argsTemplate": ["-c", "mcp_servers.lemon-tree.url=\"{mcpUrl}\""], "env": {} },
+    "unverified": ["lemonadeArgs.wire_api", "mcp.argsTemplate"],
+    "license": "Apache-2.0",
+    "benefits": {
+      "autonomy": "high",
+      "tokenEfficiency": "medium",
+      "diffStrategy": "unified-diff",
+      "subagentSupport": false,
+      "lspIntegration": false,
+      "localModelFriendly": true,
+      "bestFor": ["well-specified implementation tasks", "sandboxed command execution"],
+      "tradeoffs": "Lemonade-local runs are headless only; custom providers need per-run overrides."
+    }
+  },
+  {
+    "id": "goose",
+    "displayName": "Goose",
+    "binary": "goose",
+    "installHint": "https://block.github.io/goose/docs/getting-started/installation",
+    "knownVersion": null,
+    "versionArgs": ["--version"],
+    "helpArgs": ["run", "--help"],
+    "requiredHelpTokens": ["--text", "--output-format", "--with-streamable-http-extension"],
+    "defaultProtocol": "acp-stdio",
+    "acp": { "mode": "native", "command": "goose", "args": ["acp"] },
+    "headless": { "argsTemplate": ["run", "--text", "{prompt}", "--output-format", "stream-json"], "output": "stream-json" },
+    "env": {
+      "cloud": { "GOOSE_MODEL": "{model}" },
+      "lemonadeLocal": {
+        "GOOSE_PROVIDER": "openai",
+        "GOOSE_MODEL": "{model}",
+        "OPENAI_HOST": "{baseUrl}",
+        "OPENAI_BASE_PATH": "v1/chat/completions",
+        "OPENAI_API_KEY": "lemonade"
+      }
+    },
+    "lemonadeArgs": [],
+    "lemonadeBaseUrlStyle": "root",
+    "instruction": { "fileName": ".goosehints", "args": [] },
+    "mcp": { "method": "cli-flag", "argsTemplate": ["--with-streamable-http-extension", "{mcpUrl}"], "env": {} },
+    "unverified": ["knownVersion", "requiredHelpTokens"],
+    "license": "Apache-2.0",
+    "benefits": {
+      "autonomy": "high",
+      "tokenEfficiency": "medium",
+      "diffStrategy": "search-replace",
+      "subagentSupport": true,
+      "lspIntegration": false,
+      "localModelFriendly": true,
+      "bestFor": ["extension-driven automation", "local OpenAI-compatible models"],
+      "tradeoffs": "Behaviour depends heavily on which extensions are enabled."
+    }
+  },
+  {
+    "id": "deepseek-harness",
+    "displayName": "DeepSeek Harness",
+    "binary": "dsh",
+    "installHint": "npm install -g @deepseek-ai/dsh",
+    "knownVersion": null,
+    "versionArgs": ["--version"],
+    "helpArgs": ["--help"],
+    "requiredHelpTokens": ["--profile"],
+    "defaultProtocol": "headless-json",
+    "acp": { "mode": "none", "command": null, "args": [] },
+    "headless": { "argsTemplate": ["--profile", "headless", "{prompt}"], "output": "text" },
+    "env": {
+      "cloud": { "DEEPSEEK_API_KEY": "{secret:DEEPSEEK_API_KEY}" },
+      "lemonadeLocal": { "DEEPSEEK_BASE_URL": "{baseUrl}", "DEEPSEEK_API_KEY": "lemonade" }
+    },
+    "lemonadeArgs": [],
+    "lemonadeBaseUrlStyle": "openai-v1",
+    "instruction": { "fileName": "AGENTS.md", "args": [] },
+    "mcp": { "method": "none", "argsTemplate": [], "env": {} },
+    "unverified": ["knownVersion", "requiredHelpTokens", "headless.output", "env.lemonadeLocal.DEEPSEEK_BASE_URL", "instruction.fileName", "mcp.method"],
+    "license": null,
+    "benefits": {
+      "autonomy": "medium",
+      "tokenEfficiency": "high",
+      "diffStrategy": "search-replace",
+      "subagentSupport": false,
+      "lspIntegration": false,
+      "localModelFriendly": true,
+      "bestFor": ["low-cost DeepSeek runs", "off-peak batch work"],
+      "tradeoffs": "Young release-candidate CLI; several settings are unverified."
+    }
+  }
+]

@@ -1,0 +1,150 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+# One release for each tag. Do not cancel a release that is already running.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require an unsigned beta tag
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]; then
+            echo "Use a beta tag such as v0.1.0-beta.1. Stable tags need signing."
+            exit 1
+          fi
+
+  macos:
+    name: macOS DMG
+    needs: validate
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Set version from tag
+        run: bun scripts/set-version.ts
+      - run: bun run package:mac
+        env:
+          SCT_SIGN: adhoc
+      - name: Create DMG
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          mkdir dist/dmg
+          ditto dist/global.sct-darwin-arm64/global.sct.app dist/dmg/global.sct.app
+          ln -s /Applications dist/dmg/Applications
+          hdiutil create -volname global.sct -srcfolder dist/dmg -format UDZO "dist/global.sct-macos-arm64-$version.dmg"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/global.sct-macos-arm64-*.dmg
+          if-no-files-found: error
+          retention-days: 1
+
+  windows:
+    name: Windows ZIP
+    needs: validate
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Set version from tag
+        run: bun scripts/set-version.ts
+      - run: bun run package:win
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME.Substring(1)
+          Compress-Archive -Path dist/global.sct-win32-x64/* -DestinationPath "dist/global.sct-windows-x64-$version.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/global.sct-windows-x64-*.zip
+          if-no-files-found: error
+          retention-days: 1
+
+  linux:
+    name: Linux archive
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Set version from tag
+        run: bun scripts/set-version.ts
+      - run: bun run package:linux
+      - name: Create archive
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          tar -czf "dist/global.sct-linux-x64-$version.tar.gz" -C dist/global.sct-linux-x64 .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/global.sct-linux-x64-*.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    name: Publish unsigned beta
+    needs: [macos, windows, linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - name: Create checksums
+        working-directory: release
+        run: sha256sum global.sct-* > SHA256SUMS.txt
+      - name: Write release notes
+        run: |
+          cat > release-notes.md <<EOF
+          Unsigned beta release ${GITHUB_REF_NAME}.
+
+          This release is not signed. Windows SmartScreen and macOS Gatekeeper warnings are expected.
+          Verify each file with SHA256SUMS.txt before you run it.
+
+          - Windows: unzip, then run sct.exe. Select More info, then Run anyway if SmartScreen blocks it.
+          - macOS: open the DMG and copy global.sct.app to Applications. Right-click the app and select Open.
+          - Linux: extract the archive, then run sct.
+
+          The macOS build has an ad-hoc signature and no notarization.
+          EOF
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" release/* \
+            --prerelease \
+            --title "sct ${GITHUB_REF_NAME} (unsigned beta)" \
+            --notes-file release-notes.md

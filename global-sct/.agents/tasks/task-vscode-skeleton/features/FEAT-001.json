@@ -1,0 +1,24 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Phase 3 item 3.1: VS Code package skeleton with a shared sct executable lookup and one 'Show .sct status' command.",
+  "status": "completed",
+  "decisions": {
+    "Q1": "A. sct --version in src/main/index.ts prints app.getVersion() and exits before the vault starts.",
+    "Q2": "packages/env/src/executable.ts holds sctExecutable. packages/env/src/index.ts imports ./executable. packages/vscode/src/sct.ts imports ../../env/src/executable.",
+    "Q3": "build:vscode makes one CommonJS bundle with Bun, externalizes vscode, writes packages/vscode/dist/extension.js. @types/vscode is the only new dev dependency. engines.vscode ^1.145.0 matches @types/vscode 1.145.0."
+  },
+  "steps": [
+    "Move sctExecutable() from packages/env/src/index.ts to packages/env/src/executable.ts and import it in packages/env/src/index.ts.",
+    "Add packages/vscode/package.json (no runtime dependencies, contributes one command), tsconfig.json extending ../../tsconfig.json, src/extension.ts, src/sct.ts.",
+    "Add build:vscode script; add packages/vscode/tsconfig.json to typecheck and typecheck:tsc.",
+    "Add @types/vscode as a root dev dependency.",
+    "Add sct --version to src/main/index.ts."
+  ],
+  "acceptance_criteria": [
+    "sctExecutable exists in one file and both packages import it",
+    "bun run check, bun run typecheck:tsc, bun run build:sdk, bun run build:vscode pass"
+  ],
+  "verification": ["bun run check", "bun run typecheck:tsc", "bun run build:sdk", "bun run build:vscode"],
+  "findings": "build:sdk and build:vscode pass. packages/vscode/tsconfig.json passes bun check and the official tsc. bun run check and bun run typecheck:tsc fail only on concurrent uncommitted work of task-c8d-transport-receipt: eslint unused imports in src/main/envelope.ts:7, TS2339 in src/main/sharing.ts:148, TS2322 in src/main/transport.ts:9. This task does not touch those files. eslint on the files of this task passes. electron . --version prints 0.1.0 and exits 0 (unset ELECTRON_RUN_AS_NODE first; the agent shell sets it to 1). sct.ts uses a 10 s execFile timeout because an older .sct without --version opens the desktop window and does not exit. build:sdk now also emits the private dist/executable.d.ts, like dist/protocol.d.ts; package.json files is unchanged. Bun wrote @types/vscode as ^1.145.0; bun.lock pins 1.145.0."
+}

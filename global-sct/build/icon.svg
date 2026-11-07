@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <style>
+    /* The values copy the renderer role tokens in src/renderer/src/styles.css. */
+    @font-face {
+      font-family: "Martian Mono";
+      font-weight: 100 800;
+      font-stretch: 75% 112.5%;
+      src: url("../node_modules/@fontsource-variable/martian-mono/files/martian-mono-latin-standard-normal.woff2") format("woff2-variations");
+    }
+    :root {
+      --color-paper: oklch(12.5% 0.012 150);
+      --color-ink: oklch(94% 0.03 140);
+      --color-rule: oklch(27% 0.028 148);
+      --color-accent: oklch(87% 0.2 142);
+      --font-display: "Martian Mono", ui-monospace, monospace;
+    }
+    .plate { fill: var(--color-paper); stroke: var(--color-rule); stroke-width: 6; }
+    .mark {
+      fill: var(--color-ink);
+      font-family: var(--font-display);
+      font-size: 200px;
+      font-weight: 500;
+      font-stretch: 112.5%;
+      letter-spacing: -0.02em;
+    }
+    .dot { fill: var(--color-accent); }
+  </style>
+  <!-- Apple's macOS icon grid: an 824px plate with 185px corners, centred on a 1024px canvas. -->
+  <rect class="plate" x="100" y="100" width="824" height="824" rx="185"/>
+  <!-- The offsets centre the lowercase x-height, not the em box. -->
+  <text class="mark" x="492" y="486" text-anchor="middle" dominant-baseline="central"><tspan class="dot">.</tspan>sct</text>
+</svg>
