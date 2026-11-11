@@ -1,6 +1,7 @@
 agtop/
 subagentclassifiertoolkit/
 node_modules/
+graphify-out/
 out/
 dist/
 test-results/
