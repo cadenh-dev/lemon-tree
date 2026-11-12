@@ -63,6 +63,8 @@ export const harnessManifestEntrySchema = z.object({
   if (entry.acp.mode === 'none' && entry.defaultProtocol === 'acp-stdio') issue('acp.mode none cannot default to acp-stdio')
   if (entry.acp.mode !== 'none' && !entry.acp.command) issue('acp.command is required when ACP is available')
   if (!tokens(entry.headless.argsTemplate).includes('{prompt}')) issue('headless.argsTemplate must include {prompt}')
+  const argTemplates = [entry.headless.argsTemplate, entry.lemonadeArgs, entry.instruction.args, entry.mcp.argsTemplate]
+  if (tokens(argTemplates).some(token => SECRET.test(token))) issue('{secret:NAME} is only valid in env maps, never in process arguments')
   const outsideLocal = [entry.headless, entry.env.cloud, entry.instruction, entry.mcp]
   if (tokens(outsideLocal).includes('{baseUrl}')) issue('{baseUrl} is only valid in env.lemonadeLocal and lemonadeArgs')
   if (tokens([entry.headless, entry.env, entry.lemonadeArgs, entry.instruction]).includes('{mcpUrl}')) issue('{mcpUrl} is only valid in mcp fields')

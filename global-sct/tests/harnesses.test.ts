@@ -37,3 +37,11 @@ test('accepts vault secret references and JSON templates', async () => {
   }))
   strictEqual(ok.success, true)
 })
+
+test('rejects vault secret references in process arguments', async () => {
+  const [opencode, , aider] = await loadRaw()
+  const rejects = (entry: unknown): void => { strictEqual(harnessManifestEntrySchema.safeParse(entry).success, false) }
+  rejects(variant(opencode, e => { e.headless = { argsTemplate: ['run', '--api-key', '{secret:OPENAI_API_KEY}', '{prompt}'], output: 'json' } }))
+  rejects(variant(aider, e => { e.instruction = { fileName: 'CONVENTIONS.md', args: ['--read', '{secret:OPENAI_API_KEY}'] } }))
+  rejects(variant(opencode, e => { e.headless = { argsTemplate: ['run', { json: { key: '{secret:OPENAI_API_KEY}' } }, '{prompt}'], output: 'json' } }))
+})
