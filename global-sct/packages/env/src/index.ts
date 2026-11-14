@@ -41,8 +41,10 @@ export function loadEnv(options: LoadEnvOptions = {}): Promise<() => void> {
     apply({})
   }
 
+  let diagnostic = ''
   process.once('exit', close)
-  child.stderr.resume()
+  child.stderr.setEncoding('utf8')
+  child.stderr.on('data', (text: string) => { diagnostic = (diagnostic + text).slice(-2000) })
   return new Promise((resolve, reject) => {
     const failed = (error: Error) => {
       apply({})
@@ -57,10 +59,9 @@ export function loadEnv(options: LoadEnvOptions = {}): Promise<() => void> {
     }
     child.once('error', () => failed(new Error('Cannot launch global.sct. Install the sct CLI and make it available on PATH.')))
     child.once('close', () => {
-      if (!stopped) {
-        failed(new Error('The global.sct secret connection closed. Call loadEnv() to connect again.'))
-        close()
-      }
+      if (stopped) return
+      failed(new Error(helperFailure(diagnostic)))
+      close()
     })
     lines.on('line', (line: string) => {
       if (stopped) return
@@ -89,4 +90,12 @@ export function loadEnv(options: LoadEnvOptions = {}): Promise<() => void> {
       }
     })
   })
+}
+
+// The CLI writes a value-free diagnostic to stderr before it exits. The last line keeps the cause,
+// such as an unregistered folder, instead of a notice that only says the connection closed.
+function helperFailure(text: string): string {
+  const last = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).at(-1)
+  if (!last) return 'The global.sct secret connection closed. Call loadEnv() to connect again.'
+  return `The global.sct secret connection closed. ${last}`
 }

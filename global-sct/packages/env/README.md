@@ -55,6 +55,7 @@ The SDK calls `onChange` after later snapshots, not after the initial load.
 Initial failures reject `loadEnv()`. Later read failures restore inherited values and call `onError`.
 Without `onError`, the SDK writes a value-free diagnostic to stderr.
 It keeps checking storage and applies the next available snapshot after recovery.
+When the connection stops, the error text includes the last diagnostic line from the `sct` command, such as an unregistered folder.
 
 To stop updates and restore inherited values:
 
