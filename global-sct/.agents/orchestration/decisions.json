@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "decidedBy": "user-accepted-recommendations",
+  "decidedAt": "2026-11-15",
+  "recordedBy": "claudeAgent/claude-fable-5-2",
+  "gate": [
+    { "n": 1, "decision": "Toolkit pin d009ae4 is orphaned", "ruling": "Move to a commit on main. Mirror d009ae4 to a tag as insurance.", "blocks": ["LT-0.2"] },
+    { "n": 2, "decision": "agtop is 9 commits behind", "ruling": "Move to d516dcb only after the base gate is green at c139561, and only if typecheck:tsc and test pass after the move.", "blocks": ["LT-0.2"] },
+    { "n": 3, "decision": "sct:// alias", "ruling": "Remove. Registration uses global-sct:// only.", "blocks": ["T-11"] },
+    { "n": 4, "decision": "Direct record layout", "ruling": "Keep the single files. Add direct-outbox/<id>.json for explicit retry.", "blocks": ["T-6"] },
+    { "n": 5, "decision": "Manifest open set and Zod 4", "ruling": "Approved as one contract change with a CONTRACT_VERSION minor.", "blocks": ["LT-0.6"] },
+    { "n": 6, "decision": "VS Code panel proposal", "ruling": "Phase 1 approved.", "blocks": ["V-1"] },
+    { "n": 7, "decision": "Test changes for the two Windows failures and a portable smoke spec", "ruling": "Approved. Other existing tests stay untouched.", "blocks": ["Q-3", "U-8"] },
+    { "n": 8, "decision": "job:sync or job:events", "ruling": "Keep job:sync. Remove job:events.", "blocks": ["LT-0.9"] },
+    { "n": 9, "decision": "Signing credentials", "ruling": "Stay deferred. Fail closed. Never label an unsigned build as signed.", "blocks": ["P-6"] },
+    { "n": 10, "decision": "Research model", "ruling": "Antigravity gemini-3.8-flash only. No opencode/gemini-4-hydrogen.", "blocks": ["Phase 3 research"] },
+    { "n": 11, "decision": "Project role", "ruling": "Save implementation -> opencode-go/deepseek-v4.1-flash, research -> antigravity:gemini-3.8-flash, lead self.", "blocks": [] },
+    { "n": 12, "decision": "Worker commits", "ruling": "Yes. One commit per attempt on agent/<task>/<feat>.", "blocks": ["all tickets"] }
+  ],
+  "session": [
+    {
+      "id": "S1",
+      "decision": "Base commit",
+      "ruling": "Fast-forward local main to origin/main (4a7e537). Branch origin/1c/env-sdk-diagnostics stays unmerged. Tickets in packages/env keep away from its files until the user merges it.",
+      "evidence": "main moved 95013cd -> 4a7e537 by fast-forward on 2026-11-15. lint 0 warnings, typecheck:tsc exit 0, 47 tests pass in 7 files."
+    },
+    {
+      "id": "S2",
+      "decision": "Use of the linked machines WIN11 and t3-ubuntu",
+      "ruling": "Platform checks only, no coding workers. The lead can push wave/* and agent/* branches to origin so that the machines can fetch them. No push to main, no pull request, no tag, no release. WIN11 runs Windows tests and packaging. t3-ubuntu runs Playwright, package:linux, and is the second machine for two-machine checks.",
+      "limits": "This approval overrides gate item 12 'never pushed' for wave/* and agent/* branches only."
+    }
+  ]
+}

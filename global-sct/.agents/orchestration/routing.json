@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "file": "global-sct/.agents/orchestration/routing.json",
+  "resolvedAt": "2026-11-15",
+  "source": "orchestrator_capabilities (local, WIN11, t3-ubuntu) and search \"hydrogen\"",
+  "baseCommit": "95013cd0e91ce7d4f88094d0afc4f8e05e9adbb1",
+  "lead": {
+    "providerInstanceId": "claudeAgent",
+    "model": "claude-fable-5-2",
+    "options": {},
+    "note": "The execution prompt names opencode/claude-fable-5-2. The live session is claudeAgent/claude-fable-5-2. The session reports no effort option, so the effort value is not verified."
+  },
+  "coding": {
+    "providerInstanceId": "opencode",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "options": { "variant": "high" },
+    "repairOptions": { "variant": "max" },
+    "runtimeMode": "auto-accept-edits",
+    "isolation": "worktree",
+    "gate": "offpeak-scheduler",
+    "gateProbe": { "date": "2026-11-15", "exit": 0, "reason": "unmatched target" }
+  },
+  "research": {
+    "providerInstanceId": "antigravity",
+    "prefer": ["gemini-4-hydrogen"],
+    "fallback": ["gemini-3.8-flash"],
+    "options": { "thinking_level": "high" },
+    "runtimeMode": "approval-required",
+    "isolation": "worktree",
+    "onRateLimit": "fallback-then-wait",
+    "forbiddenProviders": ["opencode", "codex", "cursor", "claudeAgent"]
+  },
+  "bound": {
+    "researchModel": "gemini-3.8-flash",
+    "reason": "fallback-not-listed",
+    "boundAt": "2026-11-15",
+    "note": "gemini-4-hydrogen is listed only under opencode and cursor. It is not in the Antigravity catalog."
+  },
+  "maxParallel": { "coding": 3, "research": 2 },
+  "environments": {
+    "local": {
+      "environmentId": "fb40d1db-295e-4fea-94f3-f7f95a636dc8",
+      "platform": "linux",
+      "coding": true,
+      "research": true,
+      "hasProject": true
+    },
+    "WIN11": {
+      "environmentId": "eda5b895-30ee-4b64-9cfa-2a754aef873a",
+      "platform": "windows",
+      "status": "reachable",
+      "coding": true,
+      "research": true,
+      "hasProject": false,
+      "note": "opencode and antigravity can run child tasks. claudeAgent is not authenticated. No lemon-tree project exists there. Use is pending a user decision."
+    },
+    "t3-ubuntu": {
+      "environmentId": "775b304a-37b8-471a-a9b4-5c1ac424ff46",
+      "platform": "linux",
+      "status": "reachable",
+      "coding": true,
+      "research": true,
+      "hasProject": false,
+      "note": "opencode and antigravity can run child tasks. claudeAgent is not authenticated. No lemon-tree project exists there. Use is pending a user decision."
+    }
+  }
+}

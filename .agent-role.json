@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "role": {
+    "id": "planner",
+    "summary": "Main agent plans and reviews; delegates implementation and research.",
+    "main_agent": {
+      "does": [
+        "reason and plan",
+        "write briefs",
+        "review diffs",
+        "merge accepted work",
+        "fix small review findings"
+      ],
+      "does_not": [
+        "write feature code"
+      ]
+    },
+    "delegation": {
+      "implementation": {
+        "providerInstanceId": "opencode",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "options": {
+          "reasoningEffort": "high"
+        },
+        "notes": "Coding implementation. Use options {variant: high}. The reasoningEffort field is a preset placeholder and does not apply to OpenCode."
+      },
+      "fix-up rounds": {
+        "providerInstanceId": "opencode",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "options": {
+          "reasoningEffort": "xhigh"
+        },
+        "notes": "Address review findings. Use options {variant: high}, and {variant: max} for repair 2. The reasoningEffort field does not apply to OpenCode."
+      },
+      "research": {
+        "providerInstanceId": "antigravity",
+        "model": "gemini-3.8-flash",
+        "options": {},
+        "notes": "Research/web lookup only; never planning, decisions, or code."
+      },
+      "review": {
+        "providerInstanceId": "main",
+        "model": "self",
+        "options": {},
+        "notes": "Parent reviews delegated work."
+      }
+    },
+    "policies": {
+      "parent_codes": "small-fixes-only",
+      "review_required": true,
+      "acceptance_checklist": [
+        "Every brief lists acceptance criteria and minimum test expectations.",
+        "Parent reads diffs and rejects placeholder or tautological tests before merge.",
+        "Verify with verify_unit.py and record_verification.py."
+      ],
+      "offpeak_deepseek": "default",
+      "ignore_cost": false,
+      "on_provider_limit": "wait-and-reschedule",
+      "provider_limit_notes": "If a delegate provider hits a usage limit, do not switch providers unasked: schedule a one-time retry after reset and tell the user the alternatives."
+    }
+  }
+}
