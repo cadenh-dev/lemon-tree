@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "date": "2026-11-15",
+  "fingerprint": "940287e30a29541c2a95a9fade8f6792552d12134bb3865e85a48f9d583c4047",
+  "agtop": {
+    "sha": "d516dcb4c0dc888ce07622cb60eb4619f707e8bd",
+    "track": "master",
+    "surfaceHash": "70cf76661628c0d94e0f68e21c6601e3d6b9542493e512b700e96211bf7d9b86"
+  },
+  "subagentclassifiertoolkit": {
+    "sha": "6190c313ed3a01d8d3e55cf92622d2e9420729a8",
+    "track": "main",
+    "surfaceHash": "d9b8eb81b631fc61ae514ce1bb4ddbfad3d68abc3f29c570530ed8071c287a05"
+  },
+  "globalSctForkBase": {
+    "sha": "ab5b00106f0a47bcd5dd308a5576bbb464b27190"
+  },
+  "capabilities": {
+    "present": [
+      "agtop.trees",
+      "agtop.kill",
+      "agtop.spawn-contained",
+      "agtop.roles",
+      "agtop.accelerators",
+      "agtop.lemonade-probe",
+      "agtop.worktree-detect",
+      "agtop.daemon",
+      "toolkit.select-target",
+      "toolkit.verify-unit",
+      "toolkit.plan-schema",
+      "toolkit.fix-brief"
+    ],
+    "missing": [],
+    "probedAt": 1794787113634,
+    "pins": {
+      "agtop": "d516dcb4c0dc888ce07622cb60eb4619f707e8bd",
+      "toolkit": "6190c313ed3a01d8d3e55cf92622d2e9420729a8"
+    }
+  }
+}

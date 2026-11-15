@@ -1,16 +1,32 @@
 {
+  "schema": 2,
   "agtop": {
     "url": "https://github.com/cadenh-dev/agtop.git",
     "sha": "d516dcb4c0dc888ce07622cb60eb4619f707e8bd",
-    "path": "agtop"
+    "path": "agtop",
+    "track": "master",
+    "build": ["bun install --frozen-lockfile", "bun run build"],
+    "requires": ["agtop.trees", "agtop.kill", "agtop.spawn-contained", "agtop.roles"],
+    "optional": ["agtop.accelerators", "agtop.lemonade-probe", "agtop.worktree-detect", "agtop.daemon"],
+    "surface": ["src/index.ts", "src/types.ts"]
   },
   "subagentclassifiertoolkit": {
     "url": "https://github.com/cadenh-dev/SubagentClassifierToolkit.git",
     "sha": "6190c313ed3a01d8d3e55cf92622d2e9420729a8",
-    "path": "subagentclassifiertoolkit"
+    "path": "subagentclassifiertoolkit",
+    "track": "main",
+    "requires": [],
+    "optional": ["toolkit.select-target", "toolkit.verify-unit", "toolkit.plan-schema", "toolkit.fix-brief"],
+    "surface": [
+      ".opencode/skills/subagent-orchestrator/scripts/select_target.py",
+      ".opencode/skills/subagent-orchestrator/scripts/verify_unit.py",
+      ".opencode/skills/subagent-orchestrator/assets/plan.schema.json",
+      ".opencode/skills/subagent-orchestrator/data/routing-policy.json"
+    ]
   },
   "globalSctForkBase": {
     "url": "https://github.com/cadenh-dev/global.sct",
-    "sha": "ab5b00106f0a47bcd5dd308a5576bbb464b27190"
+    "sha": "ab5b00106f0a47bcd5dd308a5576bbb464b27190",
+    "track": "main"
   }
 }
