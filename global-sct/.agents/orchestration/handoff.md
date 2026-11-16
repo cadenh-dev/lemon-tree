@@ -10,6 +10,7 @@ Updated: 2026-11-15. Lead: `claudeAgent/claude-fable-5-2`. Read `decisions.json`
 | Pins | agtop `d516dcb` (track `master`), toolkit `6190c31` (track `main`). Fingerprint `940287e3…4047` in `pins.lock.json`. Both pins are ancestors of their tracks |
 | Base gate on `wave/0` (this machine, before decision S4) | `check` 0, `typecheck:tsc` 0, 84 tests in 8 files, `build` 0, React Doctor 100 / 100, 22 orchestration tests |
 | Full gate on `wave/T` at `b927e77` (t3-ubuntu, Bun 1.4.4) | `pins:check` 0, `test:orc` 22 pass, `orc:validate` 0, `check` 0, `typecheck:tsc` 0, `test` 98 pass in 10 files, `build` 0, React Doctor 100 / 100. The VM has a display, `xvfb-run`, and Playwright; the UI tests did not run yet |
+| Gates on `wave/1` | t3-ubuntu at `00f2cec`: `test:orc` 22 pass, `check` 0, `typecheck:tsc` 0, `test` 119 pass in 12 files, `build` 0, React Doctor 100 / 100. WIN11 at `6394505`: `pins` leaves the lock file unchanged, `lint` 0, `typecheck:tsc` 0, `test` 115 pass and 4 skip in 12 files |
 | Phase 0 and Phase 1 | Complete: LT-0.1 to LT-0.10 and ORC-1 to ORC-6 |
 | Phase 2 (pilot) | Complete. T-3 merged at `578eb9f`, T-10 merged at `972b285`, 1 attempt each |
 | Phase 3 | Integration branch `wave/1` (for 1A to 1D), on top of `wave/T`. `task-1b-worktree` FEAT-001 (W1B-1) and `task-1a-process-bridge` FEAT-001 (W1A-1) are dispatched to T3 subagents. W2B-1 waits for a check that `node:sqlite` works under Bun and Electron 45 |
@@ -28,6 +29,8 @@ Tests run only in the linked machines. This machine does coding (T3 subagents) a
 ## Open items
 
 - WIN11 baseline on `wave/T` at `b927e77`: `pins` 0, `pins:check` 0 (same fingerprint), `lint` 0, `typecheck:tsc` 0, `test` 95 pass and 3 skip in 10 files, `build` 0. Open: `bun install --frozen-lockfile` exits 1 in the `install-electron` postinstall ("Cannot find native binding" in `@electron-internal/extract-zip`), so the Electron binary is not installed there and UI tests and packaging cannot run on WIN11 yet. The winget installers for Git and Python need an administrator prompt; Git is the portable MinGit, and `python --version` fails. `pins:check` still passed there, so the capability probe for the toolkit is not explained yet.
+- Gate C cannot run on WIN11: the mutation probe makes symbolic links, and Windows refuses them without elevation or developer mode (`EPERM`). `test:orc` there gives 18 pass and 4 fail for that reason. Gate C runs on t3-ubuntu; WIN11 runs the unit tests of each wave after a merge.
+- Merged in Phase 3: W1B-1 (`c4bfc02`) and W1A-1 (`c835fc9`). Dispatched: W1A-2 and W2A-1. Held back: W1A-3 (needs a design decision on how a toolkit target maps to a harness), W2B-1 (`node:sqlite` check), W1C-1 (not written).
 - `origin/1c/env-sdk-diagnostics` is not merged. Keep `packages/env` tickets away from `packages/env/src/index.ts` and `tests/env-sdk.test.ts` until the user merges it.
 - Gate C does not call the toolkit outcome ledger (`verify_unit.py`, `record_verification.py`). The gate report has `ledger: "not-recorded"`.
 - A harness with an id outside `HARNESS_IDS` still needs a change to the `HarnessId` type.
