@@ -1,0 +1,173 @@
+{
+  "schema": 2,
+  "id": "FEAT-002",
+  "type": "test",
+  "description": "Ticket T-10. Add unit tests for the share gate in src/main/share-gate.ts. One outgoing operation runs only after one passphrase confirmation. The product code does not change.",
+  "status": "ready",
+  "depends_on": [],
+  "supersedes": null,
+  "scope": {
+    "allow": [
+      "global-sct/tests/share-gate.test.ts"
+    ],
+    "deny": [
+      "global-sct/src/shared/contracts.ts",
+      "global-sct/src/shared/acp-types.ts",
+      "global-sct/src/shared/ipc-channels.ts",
+      "global-sct/src/shared/harness-manifest.ts",
+      "global-sct/harnesses.json",
+      "global-sct/package.json",
+      "global-sct/bun.lock",
+      "global-sct/tsconfig*.json",
+      "global-sct/src/main/agtop-type-check.ts",
+      "global-sct/src/shared/boundary.ts",
+      "global-sct/src/shared/boundary-schemas.ts",
+      "global-sct/eslint.config.mjs",
+      "global-sct/AGENTS.md",
+      "AGENTS.md",
+      "pins.json",
+      "pins.lock.json",
+      "scripts/**",
+      "package.json",
+      "agtop/**",
+      "subagentclassifiertoolkit/**",
+      "global-sct/.agents/**",
+      ".github/**",
+      "global-sct/.github/**",
+      "global-sct/.opencode/**",
+      "global-sct/opencode.json",
+      "docs/**",
+      ".opencode/**",
+      "opencode.json"
+    ],
+    "max_files": 1,
+    "max_lines": 300
+  },
+  "contracts": [
+    {
+      "symbol": "confirmationLifetime,queueLimit",
+      "repo": "workspace",
+      "path": "global-sct/src/main/share-gate.ts",
+      "startLine": 5,
+      "endLine": 6,
+      "sha256": "0dc8e724e117146d4323fbb4af8aa5404f903840900f4b21d963bb058d83caba",
+      "text": "const confirmationLifetime = 2 * 60 * 1000\nconst queueLimit = 8",
+      "role": "read-only"
+    },
+    {
+      "symbol": "ShareGate.run,ShareGate.current",
+      "repo": "workspace",
+      "path": "global-sct/src/main/share-gate.ts",
+      "startLine": 19,
+      "endLine": 43,
+      "sha256": "b1105297807c745d8410f8306c7a9c15ccb7a917945a8076328465f7ed57d169",
+      "text": "export class ShareGate {\n  private readonly queue: GateEntry[] = []\n  private active: GateEntry | null = null\n  private timer: NodeJS.Timeout | undefined\n  private confirming = false\n\n  constructor(private readonly verify: (passphrase: unknown) => Promise<void>, private readonly changed: () => void) {}\n\n  run<T>(summary: ShareSummary, execute: () => Promise<T>): Promise<T> {\n    if (this.queue.length >= queueLimit) return Promise.reject(new Error('Wait for the current share confirmation to finish.'))\n    return new Promise<T>((resolve, reject) => {\n      const entry: GateEntry = {\n        id: randomUUID(), summary, execute, expiresAt: 0,\n        resolve: (value) => resolve(value as T),\n        reject\n      }\n      this.queue.push(entry)\n      this.advance()\n    })\n  }\n\n  current(): ShareRequestView | null {\n    if (!this.active) return null\n    return { id: this.active.id, expiresAt: this.active.expiresAt, ...structuredClone(this.active.summary) }\n  }",
+      "role": "call"
+    },
+    {
+      "symbol": "ShareGate.confirm,ShareGate.cancel,ShareGate.clear",
+      "repo": "workspace",
+      "path": "global-sct/src/main/share-gate.ts",
+      "startLine": 45,
+      "endLine": 81,
+      "sha256": "662ffa05ed71b604efa2f5a34ec9bff47eaf112a1b94f9e7fe28c4118a05ea68",
+      "text": "  async confirm(input: unknown): Promise<void> {\n    const entry = this.active\n    if (!entry) throw new Error('No share confirmation is waiting.')\n    const request = requireConfirmation(input)\n    if (request.id !== entry.id) throw new Error('This share confirmation is no longer active. Start the share again.')\n    if (Date.now() >= entry.expiresAt) {\n      this.expire()\n      throw new Error('This share confirmation expired. Start the share again.')\n    }\n    if (this.confirming) throw new Error('The passphrase is already being checked.')\n    this.confirming = true\n    try {\n      await this.verify(request.passphrase)\n    } finally {\n      this.confirming = false\n    }\n    if (this.active !== entry) throw new Error('This share confirmation is no longer active. Start the share again.')\n    this.release()\n    // Start the approved operation only after the one-use authorization is gone.\n    void Promise.resolve().then(entry.execute).then(entry.resolve, entry.reject).finally(() => {\n      this.advance()\n    })\n  }\n\n  cancel(): void {\n    const entry = this.active\n    if (!entry) return\n    this.release()\n    entry.reject(new Error('The share was cancelled.'))\n    this.advance()\n  }\n\n  clear(): void {\n    const entries = [...(this.active ? [this.active] : []), ...this.queue.splice(0)]\n    this.release()\n    for (const entry of entries) entry.reject(new Error('The vault is locked. Start the share again.'))\n  }",
+      "role": "call"
+    },
+    {
+      "symbol": "ShareSummary,ShareRequestView,ShareConfirmInput",
+      "repo": "workspace",
+      "path": "global-sct/src/shared/share.ts",
+      "startLine": 1,
+      "endLine": 23,
+      "sha256": "0f5d49ea61fb3f0cbb0a01bc0b0b18cae9ab396e3d607f1913b9cafb2d8a5d8e",
+      "text": "import type { DeliveryMode } from './transport'\n\n// The transport that the user selected. WebRTC and AirDrop are paths within the shared delivery record.\nexport type ShareMode = DeliveryMode | 'webrtc' | 'airdrop'\n\n// The main process takes this snapshot when an outgoing operation starts. The renderer cannot change it.\nexport interface ShareSummary {\n  mode: ShareMode\n  recipient: string\n  project: string\n  secretNames: string[]\n}\n\n// The active confirmation. The ID binds the dialog to the operation that the main process holds.\nexport interface ShareRequestView extends ShareSummary {\n  id: string\n  expiresAt: number\n}\n\nexport interface ShareConfirmInput {\n  id: string\n  passphrase: string\n}",
+      "role": "read-only"
+    }
+  ],
+  "steps": [
+    "Read global-sct/src/main/share-gate.ts, global-sct/src/shared/share.ts, and global-sct/tests/envelope.test.ts (for the test style).",
+    "Create global-sct/tests/share-gate.test.ts. Construct the real ShareGate with a `verify` function that you write in the test (it resolves for the correct passphrase and rejects for another) and a `changed` function that counts its calls.",
+    "Add one test for each line in tests.must_add. Read the active request with gate.current() to get the id for confirm().",
+    "For the expiry test only, use the node:test timer control `t.mock.timers.enable({ apis: ['setTimeout', 'Date'] })` and `t.mock.timers.tick(...)`. A real wait of 2 minutes is not permitted. Use no other mock.",
+    "From global-sct/tests run `bun test share-gate.test.ts`. From global-sct/ run each command in verification.",
+    "Commit the one new file with one commit."
+  ],
+  "acceptance_criteria": [
+    "tests/share-gate.test.ts exists and each line of tests.must_add has a test",
+    "Each test uses the real ShareGate class",
+    "The operation function (`execute`) records its calls, and each test asserts the call count",
+    "No test waits for real time longer than 1 second",
+    "No product file changes",
+    "bun run typecheck:tsc, bun run lint, and bun run test pass, and `bun test share-gate.test.ts` passes"
+  ],
+  "verification": [
+    "bun run typecheck:tsc",
+    "bun run lint",
+    "bun run test"
+  ],
+  "tests": {
+    "files": [
+      "global-sct/tests/share-gate.test.ts"
+    ],
+    "must_add": [
+      "A wrong passphrase sends nothing: confirm rejects, the operation does not run, the request stays active, and a later correct confirm runs the operation one time and resolves run() with its result",
+      "Expiry: after 2 minutes the promise of run() rejects with 'This share confirmation expired. Start the share again.', current() is null, and the operation did not run; 1 millisecond before that time the request is still active",
+      "Cancel: run() rejects with 'The share was cancelled.', the operation does not run, and the next queued request becomes active",
+      "Clear on lock: clear() rejects the active request and each queued request with 'The vault is locked. Start the share again.', and current() is null",
+      "A second confirm during verification rejects with 'The passphrase is already being checked.', and the operation runs one time",
+      "Queue limit: with 1 active request and 8 queued requests, the next run() rejects with 'Wait for the current share confirmation to finish.'",
+      "confirm rejects an input with a wrong id, an input with no passphrase, and a call when no request waits; the operation does not run"
+    ],
+    "min_cases": 7,
+    "mutations": [
+      {
+        "path": "global-sct/src/main/share-gate.ts",
+        "find": "    if (this.confirming) throw new Error('The passphrase is already being checked.')\n",
+        "replace": ""
+      },
+      {
+        "path": "global-sct/src/main/share-gate.ts",
+        "find": "const queueLimit = 8",
+        "replace": "const queueLimit = 9"
+      },
+      {
+        "path": "global-sct/src/main/share-gate.ts",
+        "find": "const confirmationLifetime = 2 * 60 * 1000",
+        "replace": "const confirmationLifetime = 3 * 60 * 1000"
+      },
+      {
+        "path": "global-sct/src/main/share-gate.ts",
+        "find": "    for (const entry of entries) entry.reject(new Error('The vault is locked. Start the share again.'))\n",
+        "replace": ""
+      },
+      {
+        "path": "global-sct/src/main/share-gate.ts",
+        "find": "    entry.reject(new Error('The share was cancelled.'))\n",
+        "replace": ""
+      },
+      {
+        "path": "global-sct/src/main/share-gate.ts",
+        "find": "      await this.verify(request.passphrase)\n",
+        "replace": "      await this.verify(request.passphrase).catch(() => undefined)\n"
+      }
+    ]
+  },
+  "budget": {
+    "context_tokens": 24000,
+    "wall_clock_minutes": 30
+  },
+  "route": {
+    "providerInstanceId": "opencode",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "options": {
+      "variant": "high"
+    },
+    "classified_by": "lead-pinned",
+    "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
+  },
+  "worktree": null,
+  "attempts": [],
+  "blocked_reason": null,
+  "findings": "Pilot ticket 2 of 2. Ready for dispatch."
+}

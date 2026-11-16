@@ -1,0 +1,136 @@
+{
+  "schema": 2,
+  "id": "FEAT-001",
+  "type": "test",
+  "description": "Ticket T-3. Add unit tests for the Direct frame codec in src/main/direct-frame.ts: FrameReader, encodeFrame, transferBody, and readTransferBody. The product code does not change.",
+  "status": "ready",
+  "depends_on": [],
+  "supersedes": null,
+  "scope": {
+    "allow": [
+      "global-sct/tests/direct-frame.test.ts"
+    ],
+    "deny": [
+      "global-sct/src/shared/contracts.ts",
+      "global-sct/src/shared/acp-types.ts",
+      "global-sct/src/shared/ipc-channels.ts",
+      "global-sct/src/shared/harness-manifest.ts",
+      "global-sct/harnesses.json",
+      "global-sct/package.json",
+      "global-sct/bun.lock",
+      "global-sct/tsconfig*.json",
+      "global-sct/src/main/agtop-type-check.ts",
+      "global-sct/src/shared/boundary.ts",
+      "global-sct/src/shared/boundary-schemas.ts",
+      "global-sct/eslint.config.mjs",
+      "global-sct/AGENTS.md",
+      "AGENTS.md",
+      "pins.json",
+      "pins.lock.json",
+      "scripts/**",
+      "package.json",
+      "agtop/**",
+      "subagentclassifiertoolkit/**",
+      "global-sct/.agents/**",
+      ".github/**",
+      "global-sct/.github/**",
+      "global-sct/.opencode/**",
+      "global-sct/opencode.json",
+      "docs/**",
+      ".opencode/**",
+      "opencode.json"
+    ],
+    "max_files": 1,
+    "max_lines": 300
+  },
+  "contracts": [
+    {
+      "symbol": "direct-frame",
+      "repo": "workspace",
+      "path": "global-sct/src/main/direct-frame.ts",
+      "startLine": 1,
+      "endLine": 46,
+      "sha256": "21409e942d7290c8bbc907fa0a18b575f0eef47d8f77ca0db5a08b7620f99887",
+      "text": "export const transferLimit = 8 * 1024 * 1024\nexport const wrappedKeyLimit = 4096\nconst frameBodyLimit = 1 + 4 + transferLimit + wrappedKeyLimit\n\nexport class FrameReader {\n  private buffer = Buffer.alloc(0)\n\n  push(chunk: Buffer): { kind: number; body: Buffer }[] {\n    this.buffer = Buffer.concat([this.buffer, chunk])\n    const frames: { kind: number; body: Buffer }[] = []\n    while (this.buffer.length >= 4) {\n      const length = this.buffer.readUInt32BE(0)\n      if (length < 1 || length > frameBodyLimit) throw new Error('The Direct frame is too large.')\n      if (this.buffer.length < 4 + length) break\n      const body = this.buffer.subarray(4, 4 + length)\n      frames.push({ kind: body[0] ?? -1, body: body.subarray(1) })\n      this.buffer = this.buffer.subarray(4 + length)\n    }\n    return frames\n  }\n}\n\nexport function encodeFrame(kind: number, body: Buffer): Buffer {\n  const frame = Buffer.allocUnsafe(5 + body.length)\n  frame.writeUInt32BE(body.length + 1, 0)\n  frame[4] = kind\n  body.copy(frame, 5)\n  return frame\n}\n\nexport function transferBody(payload: Buffer, wrappedKey: Buffer): Buffer {\n  const body = Buffer.allocUnsafe(4 + payload.length + wrappedKey.length)\n  body.writeUInt32BE(payload.length, 0)\n  payload.copy(body, 4)\n  wrappedKey.copy(body, 4 + payload.length)\n  return body\n}\n\nexport function readTransferBody(body: Buffer): { payload: Buffer; wrappedKey: Buffer } {\n  if (body.length < 5) throw new Error('The Direct transfer is incomplete.')\n  const length = body.readUInt32BE(0)\n  if (length === 0 || length > transferLimit || body.length <= 4 + length) throw new Error('The Direct transfer is invalid.')\n  const wrappedKey = body.subarray(4 + length)\n  if (wrappedKey.length === 0 || wrappedKey.length > wrappedKeyLimit) throw new Error('The Direct wrapped key is invalid.')\n  return { payload: body.subarray(4, 4 + length), wrappedKey }\n}",
+      "role": "read-only"
+    }
+  ],
+  "steps": [
+    "Read global-sct/src/main/direct-frame.ts and global-sct/tests/envelope.test.ts (for the test style).",
+    "Create global-sct/tests/direct-frame.test.ts with one test for each line in tests.must_add.",
+    "From global-sct/tests run `bun test direct-frame.test.ts`.",
+    "From global-sct/ run each command in verification.",
+    "Commit the one new file with one commit."
+  ],
+  "acceptance_criteria": [
+    "tests/direct-frame.test.ts exists and each line of tests.must_add has a test",
+    "Each test calls the real functions of src/main/direct-frame.ts with real Buffers",
+    "No test allocates more than 64 KiB",
+    "No product file changes",
+    "bun run typecheck:tsc, bun run lint, and bun run test pass, and `bun test direct-frame.test.ts` passes"
+  ],
+  "verification": [
+    "bun run typecheck:tsc",
+    "bun run lint",
+    "bun run test"
+  ],
+  "tests": {
+    "files": [
+      "global-sct/tests/direct-frame.test.ts"
+    ],
+    "must_add": [
+      "A frame that arrives in split chunks (the 4-byte length header split, then the body split) gives no frame until the last byte, then one frame with the correct kind and body",
+      "Two frames in one chunk give two frames in order, and a later chunk gives the next frame",
+      "A frame with length 0 is rejected with 'The Direct frame is too large.'",
+      "A length header of 1 + 4 + transferLimit + wrappedKeyLimit + 1 is rejected when only the 4 header bytes have arrived, and the same header minus 1 is not rejected",
+      "encodeFrame and transferBody round-trip through FrameReader and readTransferBody",
+      "readTransferBody rejects a body with payload length 0, a body with no wrapped key, and a body shorter than 5 bytes",
+      "readTransferBody rejects surplus bytes: a wrapped key of 4,097 bytes is rejected with 'The Direct wrapped key is invalid.', and a wrapped key of 4,096 bytes is accepted"
+    ],
+    "min_cases": 6,
+    "mutations": [
+      {
+        "path": "global-sct/src/main/direct-frame.ts",
+        "find": "if (length < 1 || length > frameBodyLimit)",
+        "replace": "if (length > frameBodyLimit)"
+      },
+      {
+        "path": "global-sct/src/main/direct-frame.ts",
+        "find": "const frameBodyLimit = 1 + 4 + transferLimit + wrappedKeyLimit",
+        "replace": "const frameBodyLimit = 1 + 4 + transferLimit + wrappedKeyLimit + 1024"
+      },
+      {
+        "path": "global-sct/src/main/direct-frame.ts",
+        "find": "this.buffer = this.buffer.subarray(4 + length)",
+        "replace": "this.buffer = Buffer.alloc(0)"
+      },
+      {
+        "path": "global-sct/src/main/direct-frame.ts",
+        "find": "wrappedKey.length > wrappedKeyLimit",
+        "replace": "wrappedKey.length > wrappedKeyLimit + 1"
+      },
+      {
+        "path": "global-sct/src/main/direct-frame.ts",
+        "find": "if (length === 0 || length > transferLimit || body.length <= 4 + length)",
+        "replace": "if (length > transferLimit || body.length < 4 + length)"
+      }
+    ]
+  },
+  "budget": {
+    "context_tokens": 24000,
+    "wall_clock_minutes": 30
+  },
+  "route": {
+    "providerInstanceId": "opencode",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "options": {
+      "variant": "high"
+    },
+    "classified_by": "lead-pinned",
+    "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
+  },
+  "worktree": null,
+  "attempts": [],
+  "blocked_reason": null,
+  "findings": "Pilot ticket 1 of 2. Ready for dispatch."
+}

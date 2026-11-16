@@ -1,0 +1,10 @@
+{
+  "task_id": "task-transport-tests",
+  "task_description": "Pilot of the coding pipeline. Tickets T-3 and T-10 of the completion plan: unit tests for the Direct frame codec and for the share gate. Test files only.",
+  "status": "in_progress",
+  "feature_order": [
+    "FEAT-001",
+    "FEAT-002"
+  ],
+  "blocked_reason": null
+}
