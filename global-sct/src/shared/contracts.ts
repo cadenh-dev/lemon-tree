@@ -7,6 +7,7 @@ import type {
   ProcessRole, RawOsProcess, RoleSource, SpawnAgentOptions,
 } from 'agtop'
 import type { SessionUpdate } from './acp-types'
+import type { CapabilityId } from './boundary'
 import type { Project } from './projects'
 
 export type {
@@ -94,7 +95,13 @@ export interface HarnessManifestEntry {
   unverified: string[]
   license: string | null
   benefits: HarnessCapabilityProfile
+  /** Project additions. Each key has the form `x.<name>`. The runner ignores a key that it does not know. */
+  extensions?: Record<`x.${string}`, JsonTemplate>
+  /** Capabilities the entry needs. The runner refuses the entry when one is missing and reports it in HarnessPreflightResult.errors. */
+  capabilities?: CapabilityId[]
 }
+/** The content of global-sct/harnesses.json. A bare HarnessManifestEntry[] is manifest version 0. */
+export interface HarnessManifestFile { manifestVersion: 1; harnesses: HarnessManifestEntry[] }
 
 export interface HarnessPreflightResult {
   harnessId: HarnessId

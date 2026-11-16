@@ -1,11 +1,11 @@
-import { deepStrictEqual, strictEqual } from 'node:assert'
+import { deepStrictEqual, strictEqual, throws } from 'node:assert'
 import { test } from 'node:test'
 import { readFile } from 'node:fs/promises'
 import { HARNESS_IDS } from '../src/shared/contracts'
-import { harnessManifestEntrySchema, harnessManifestSchema } from '../src/shared/harness-manifest'
+import { harnessManifestEntrySchema, harnessManifestSchema, parseHarnessManifest } from '../src/shared/harness-manifest'
 
 async function loadRaw(): Promise<unknown[]> {
-  return JSON.parse(await readFile('../harnesses.json', 'utf8')) as unknown[]
+  return (JSON.parse(await readFile('../harnesses.json', 'utf8')) as { harnesses: unknown[] }).harnesses
 }
 
 function variant(base: unknown, change: (entry: Record<string, unknown>) => void): unknown {
@@ -44,4 +44,29 @@ test('rejects vault secret references in process arguments', async () => {
   rejects(variant(opencode, e => { e.headless = { argsTemplate: ['run', '--api-key', '{secret:OPENAI_API_KEY}', '{prompt}'], output: 'json' } }))
   rejects(variant(aider, e => { e.instruction = { fileName: 'CONVENTIONS.md', args: ['--read', '{secret:OPENAI_API_KEY}'] } }))
   rejects(variant(opencode, e => { e.headless = { argsTemplate: ['run', { json: { key: '{secret:OPENAI_API_KEY}' } }, '{prompt}'], output: 'json' } }))
+})
+
+test('reads the versioned file and the bare array of manifest version 0', async () => {
+  const file = JSON.parse(await readFile('../harnesses.json', 'utf8')) as { manifestVersion: number; harnesses: unknown[] }
+  strictEqual(file.manifestVersion, 1)
+  deepStrictEqual(parseHarnessManifest(file).map(entry => entry.id), [...HARNESS_IDS])
+  deepStrictEqual(parseHarnessManifest(file.harnesses), parseHarnessManifest(file))
+  throws(() => parseHarnessManifest({ ...file, manifestVersion: 2 }))
+  throws(() => parseHarnessManifest({ ...file, extra: true }))
+})
+
+test('requires each core harness one time and sets no upper limit on the entry count', async () => {
+  const entries = await loadRaw()
+  strictEqual(harnessManifestSchema.safeParse(entries.slice(1)).success, false)
+  strictEqual(harnessManifestSchema.safeParse([...entries, entries[0]]).success, false)
+  strictEqual(harnessManifestSchema.safeParse([]).success, false)
+})
+
+test('accepts x. extensions and known capabilities, and rejects other keys', async () => {
+  const [opencode] = await loadRaw()
+  const accepts = (entry: unknown): boolean => harnessManifestEntrySchema.safeParse(entry).success
+  strictEqual(accepts(variant(opencode, e => { e.extensions = { 'x.team-note': { owner: 'lead', tags: ['a'] } }; e.capabilities = ['acp.v1', 'x.custom-probe'] })), true)
+  strictEqual(accepts(variant(opencode, e => { e.extensions = { note: 'no prefix' } })), false)
+  strictEqual(accepts(variant(opencode, e => { e.extensions = { 'x.': 1 } })), false)
+  strictEqual(accepts(variant(opencode, e => { e.capabilities = ['acp.v9'] })), false)
 })

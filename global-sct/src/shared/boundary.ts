@@ -3,7 +3,8 @@
 // The run-time schemas and the reader are in boundary-schemas.ts.
 
 /** Major: breaking. Minor: additive fields only. */
-export const CONTRACT_VERSION = { major: 1, minor: 0 } as const
+// 1.1: HarnessManifestEntry has the optional fields `extensions` and `capabilities`, and harnesses.json has `manifestVersion`.
+export const CONTRACT_VERSION = { major: 1, minor: 1 } as const
 
 export const CAPABILITIES = [
   'agtop.trees', 'agtop.kill', 'agtop.spawn-contained', 'agtop.roles', 'agtop.accelerators',
