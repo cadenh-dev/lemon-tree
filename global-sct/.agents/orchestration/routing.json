@@ -13,22 +13,52 @@
   "coding": {
     "providerInstanceId": "opencode",
     "model": "opencode-go/deepseek-v4.1-flash",
-    "options": { "variant": "high" },
-    "repairOptions": { "variant": "max" },
-    "runtimeMode": "auto-accept-edits",
+    "options": {
+      "variant": "high"
+    },
+    "repairOptions": {
+      "variant": "max"
+    },
+    "runtimeMode": null,
     "isolation": "worktree",
     "gate": "offpeak-scheduler",
-    "gateProbe": { "date": "2026-11-15", "exit": 0, "reason": "unmatched target" }
+    "gateProbe": {
+      "date": "2026-11-15",
+      "exit": 0,
+      "reason": "unmatched target"
+    },
+    "dispatch": "opencode-cli",
+    "command": [
+      "opencode",
+      "run",
+      "--agent",
+      "lt-coder",
+      "--model",
+      "opencode-go/deepseek-v4.1-flash#<variant>",
+      "--auto"
+    ],
+    "note": "T3 delegate_task does not apply the lt-coder rules. See decisions.json S3."
   },
   "research": {
     "providerInstanceId": "antigravity",
-    "prefer": ["gemini-4-hydrogen"],
-    "fallback": ["gemini-3.8-flash"],
-    "options": { "thinking_level": "high" },
+    "prefer": [
+      "gemini-4-hydrogen"
+    ],
+    "fallback": [
+      "gemini-3.8-flash"
+    ],
+    "options": {
+      "thinking_level": "high"
+    },
     "runtimeMode": "approval-required",
     "isolation": "worktree",
     "onRateLimit": "fallback-then-wait",
-    "forbiddenProviders": ["opencode", "codex", "cursor", "claudeAgent"]
+    "forbiddenProviders": [
+      "opencode",
+      "codex",
+      "cursor",
+      "claudeAgent"
+    ]
   },
   "bound": {
     "researchModel": "gemini-3.8-flash",
@@ -36,7 +66,10 @@
     "boundAt": "2026-11-15",
     "note": "gemini-4-hydrogen is listed only under opencode and cursor. It is not in the Antigravity catalog."
   },
-  "maxParallel": { "coding": 3, "research": 2 },
+  "maxParallel": {
+    "coding": 3,
+    "research": 2
+  },
   "environments": {
     "local": {
       "environmentId": "fb40d1db-295e-4fea-94f3-f7f95a636dc8",
