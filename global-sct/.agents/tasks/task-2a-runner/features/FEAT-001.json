@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Ticket W2A-1. Add the template engine for the harness manifest in src/main/harness-template.ts: placeholder substitution, `{ json }` values, the headless argument order, and the deep merge of env templates. The ACP runner (a later ticket) calls it.",
-  "status": "verifying",
+  "status": "completed",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -164,9 +164,9 @@
       "n": 1,
       "kind": "initial",
       "started_at": "2026-11-16T05:10:44.587Z",
-      "report": "global-sct/.agents/tasks/task-2a-runner/attempts/FEAT-001-1.gate.json"
+      "report": "t3-ubuntu:/home/caden/lt-wt/W2A-1.gate.json"
     }
   ],
   "blocked_reason": null,
-  "findings": "Ready for dispatch through a T3 subagent (decision S4)."
+  "findings": "Completed on 2026-11-15 in 1 attempt. Worker: opencode-go/deepseek-v4.1-flash, variant high, as a T3 subagent on this machine (decision S4); it ran typecheck and lint only. Files changed: global-sct/src/main/harness-template.ts (128 lines) and global-sct/tests/harness-template.test.ts (11 tests, including all 6 manifest entries for both backends). Gate C ran on t3-ubuntu (Bun 1.4.4) at d6cf5fe against base b058d1d and passed: pins, scope, prepare, typecheck, lint, test, test-substance (the new tests fail on the base), verification, secret-scan. The ui check does not apply. The lead read the full diff and each test: the engine has no I/O, substitutes before JSON.stringify, merges a repeated env key only for two { json } values, and keeps secret values out of error messages. The file location src/main/harness-template.ts is a choice of the lead; the ownership matrix has no row for it. Merge commit on wave/1: 4426e0b. The lead added the test file to the test script in global-sct/package.json."
 }
