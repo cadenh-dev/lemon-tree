@@ -135,6 +135,12 @@
         "The lt-coder sandbox does not apply to T3 subagents (report orc-4-negative.md). Gate C and the review of the lead are the controls.",
         "On this machine the lead runs only git-level checks (diff, scope). No typecheck, lint, test, build, or Playwright run here."
       ]
+    },
+    {
+      "id": "S5",
+      "decision": "What a coding worker can run on this machine",
+      "decidedAt": "2026-11-15",
+      "ruling": "Typecheck and lint only (`bun run typecheck:tsc`, `bun run lint`), as static checks. No unit test, no build, and no app on this machine. All tests, the build, React Doctor, Playwright, and Gate C run in the VMs."
     }
   ]
 }
