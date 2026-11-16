@@ -1,0 +1,9 @@
+{
+  "task_id": "task-1b-worktree",
+  "task_description": "Wave 1B. The worktree manager of the control plane: one isolated git worktree for each job, with commit, diff, merge, and discard.",
+  "status": "in_progress",
+  "feature_order": [
+    "FEAT-001"
+  ],
+  "blocked_reason": null
+}

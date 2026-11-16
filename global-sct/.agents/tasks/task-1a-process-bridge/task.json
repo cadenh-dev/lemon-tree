@@ -1,0 +1,9 @@
+{
+  "task_id": "task-1a-process-bridge",
+  "task_description": "Wave 1A. The process bridge: the only run-time importer of agtop, with capability discovery and a defined result when agtop or one of its functions is absent.",
+  "status": "in_progress",
+  "feature_order": [
+    "FEAT-001"
+  ],
+  "blocked_reason": null
+}

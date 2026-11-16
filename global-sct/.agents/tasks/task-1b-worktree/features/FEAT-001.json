@@ -1,0 +1,129 @@
+{
+  "schema": 2,
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Ticket W1B-1. Implement the WorktreeManager contract in src/main/worktree-manager.ts with real git commands: create, autoCommit, diffSummary, merge, discard, and openInEditor.",
+  "status": "ready",
+  "depends_on": [],
+  "supersedes": null,
+  "scope": {
+    "allow": [
+      "global-sct/src/main/worktree-manager.ts",
+      "global-sct/tests/worktree-manager.test.ts"
+    ],
+    "deny": [
+      "global-sct/src/shared/contracts.ts",
+      "global-sct/src/shared/acp-types.ts",
+      "global-sct/src/shared/ipc-channels.ts",
+      "global-sct/src/shared/harness-manifest.ts",
+      "global-sct/harnesses.json",
+      "global-sct/package.json",
+      "global-sct/bun.lock",
+      "global-sct/tsconfig*.json",
+      "global-sct/src/main/agtop-type-check.ts",
+      "global-sct/src/shared/boundary.ts",
+      "global-sct/src/shared/boundary-schemas.ts",
+      "global-sct/eslint.config.mjs",
+      "global-sct/AGENTS.md",
+      "AGENTS.md",
+      "pins.json",
+      "pins.lock.json",
+      "scripts/**",
+      "package.json",
+      "agtop/**",
+      "subagentclassifiertoolkit/**",
+      "global-sct/.agents/**",
+      ".github/**",
+      "global-sct/.github/**",
+      "global-sct/.opencode/**",
+      "global-sct/opencode.json",
+      "docs/**",
+      ".opencode/**",
+      "opencode.json"
+    ],
+    "max_files": 2,
+    "max_lines": 600
+  },
+  "contracts": [
+    {
+      "symbol": "WorktreeRequest,GitWorktreeMetadata,DiffSummary,AutoCommitResult,MergeResult",
+      "repo": "workspace",
+      "path": "global-sct/src/shared/contracts.ts",
+      "startLine": 143,
+      "endLine": 175,
+      "sha256": "d1763e6f497eeaca66064fe17fc761895b618dc6d807e78ea50c46448b223928",
+      "text": "// ---------------------------------------------------------------- Worktrees and diffs\n\nexport type WorktreeMode = 'isolated' | 'in-place'\nexport type EditorId = 'code' | 'cursor' | 'zed'\n/** Isolated: `git worktree add -b agent/<jobId> ~/.global-sct/worktrees/<jobId> <baseBranch>`. */\nexport interface WorktreeRequest { jobId: string; repoRoot: string; baseBranch: string; mode: WorktreeMode }\n/** Control-plane lifecycle record. Distinct from agtop's GitWorktreeInfo, which is detection only. */\nexport interface GitWorktreeMetadata {\n  repoRoot: string\n  worktreePath: string\n  branch: string\n  baseBranch: string\n  isIsolatedWorktree: boolean\n}\nexport interface DiffFileStat {\n  filePath: string\n  additions: number\n  deletions: number\n  status: 'modified' | 'added' | 'deleted' | 'renamed'\n  /** Binary files report 0 additions and 0 deletions. */\n  binary: boolean\n}\nexport interface DiffSummary {\n  baseBranch: string\n  worktreeBranch: string\n  commitHash?: string\n  totalAdditions: number\n  totalDeletions: number\n  files: DiffFileStat[]\n}\n/** commitHash is null when there was nothing to commit. */\nexport interface AutoCommitResult { commitHash: string | null }\nexport type MergeResult = { merged: true; mergeCommit: string } | { merged: false; conflicts: string[]; reason: string }",
+      "role": "read-only"
+    },
+    {
+      "symbol": "WorktreeManager",
+      "repo": "workspace",
+      "path": "global-sct/src/shared/contracts.ts",
+      "startLine": 436,
+      "endLine": 444,
+      "sha256": "4682d9da7b14adce99caa33f89c3ea466dcfa2d35f99a0bf8fa37c8c65791e0d",
+      "text": "/** Wave 1B. */\nexport interface WorktreeManager {\n  create(request: WorktreeRequest): Promise<GitWorktreeMetadata>\n  autoCommit(worktree: GitWorktreeMetadata, message: string): Promise<AutoCommitResult>\n  diffSummary(worktree: GitWorktreeMetadata): Promise<DiffSummary>\n  merge(worktree: GitWorktreeMetadata): Promise<MergeResult>\n  discard(worktree: GitWorktreeMetadata): Promise<void>\n  openInEditor(worktree: GitWorktreeMetadata, editor: EditorId): Promise<void>\n}",
+      "role": "implement"
+    }
+  ],
+  "steps": [
+    "Read the contracts in this ticket, then global-sct/src/main/share-gate.ts (code style) and global-sct/tests/envelope.test.ts (test style).",
+    "Create src/main/worktree-manager.ts. Export createWorktreeManager (signature in context.key_patterns). Run git with execFile('git', [...args], { cwd }) and no shell. Import the types from '../shared/contracts'.",
+    "create: for mode 'isolated' run `git worktree add -b agent/<jobId> <worktreesRoot>/<jobId> <baseBranch>` in repoRoot and return { repoRoot, worktreePath, branch: 'agent/<jobId>', baseBranch, isIsolatedWorktree: true }. For mode 'in-place' create nothing and return { repoRoot, worktreePath: repoRoot, branch: <the current branch of repoRoot>, baseBranch, isIsolatedWorktree: false }. Reject a jobId that is not /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/ before any git command.",
+    "autoCommit: `git add -A`, then commit with the message when `git status --porcelain` is not empty, and return { commitHash: <full hash> }. Return { commitHash: null } when nothing changed. Pass `-c user.name=Lemon Tree -c user.email=lemon-tree@localhost` only when the repository has no user.name.",
+    "diffSummary: compare baseBranch with the worktree branch head using `git diff --numstat -z` and `git diff --name-status -z` between `<baseBranch>...<branch>` (three dots). A binary file has additions 0, deletions 0, binary true. status is modified, added, deleted, or renamed. Set commitHash to the branch head. totalAdditions and totalDeletions are the sums.",
+    "merge: only for an isolated worktree. In repoRoot, when the current branch is baseBranch and the tree is clean, run `git merge --no-ff --no-edit <branch>`. On success return { merged: true, mergeCommit }. On a conflict collect the conflicted paths (`git diff --name-only --diff-filter=U`), run `git merge --abort`, and return { merged: false, conflicts, reason }. When repoRoot is on another branch or is not clean, return { merged: false, conflicts: [], reason } and change nothing.",
+    "discard: for an isolated worktree run `git worktree remove --force <worktreePath>` and `git branch -D <branch>` in repoRoot. For an in-place worktree do nothing. openInEditor: call launchEditor(editor, [worktreePath]) where editor is 'code', 'cursor', or 'zed'.",
+    "Create tests/worktree-manager.test.ts. Each test makes a real temporary git repository with mkdtemp (git init -b main, user.name and user.email set, one commit) and removes it after. No mock of git.",
+    "Run `bun run typecheck:tsc` and `bun run lint` from global-sct/ and correct each error. Commit the two files with one commit."
+  ],
+  "acceptance_criteria": [
+    "src/main/worktree-manager.ts exports createWorktreeManager, and its result satisfies the WorktreeManager interface without a type cast",
+    "Each git call uses an argument array and no shell",
+    "No file outside the worktrees root and the given repository is written",
+    "An invalid jobId is rejected before git runs",
+    "merge never leaves repoRoot in a merge state",
+    "tests/worktree-manager.test.ts uses real temporary repositories",
+    "bun run typecheck:tsc, bun run lint, and bun run test pass"
+  ],
+  "verification": [
+    "bun run typecheck:tsc",
+    "bun run lint",
+    "bun run test"
+  ],
+  "tests": {
+    "files": [
+      "global-sct/tests/worktree-manager.test.ts"
+    ],
+    "must_add": [
+      "create with mode isolated makes the worktree directory on branch agent/<jobId> from the base branch and returns the metadata",
+      "create with mode in-place makes no worktree and returns the repository root and its current branch",
+      "create rejects a jobId with a path separator or '..' and makes no directory",
+      "autoCommit commits a new file and a changed file and returns the commit hash; a second call with no change returns null",
+      "diffSummary reports one added, one modified, and one deleted file with correct line counts and totals, and a binary file with binary true",
+      "merge of a clean change gives merged true and the base branch contains the file",
+      "merge with a conflict gives merged false with the conflicted path, and the repository has no merge in progress after it",
+      "merge is refused when the repository root is on another branch",
+      "discard removes the worktree directory and the agent branch",
+      "openInEditor calls the launcher with the editor command and the worktree path"
+    ],
+    "min_cases": 10
+  },
+  "budget": {
+    "context_tokens": 24000,
+    "wall_clock_minutes": 45
+  },
+  "route": {
+    "providerInstanceId": "opencode",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "options": {
+      "variant": "high"
+    },
+    "classified_by": "lead-pinned",
+    "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
+  },
+  "worktree": null,
+  "attempts": [],
+  "blocked_reason": null,
+  "findings": "Ready for dispatch through a T3 subagent (decision S4)."
+}

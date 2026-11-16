@@ -70,7 +70,9 @@ if (tokens > Math.min(feature.budget.context_tokens, TOKEN_LIMIT)) refuse(`conte
 // The worktree. A repair continues in the same worktree and adds one commit.
 const branch = `agent/${taskId}/${featId}`;
 const worktree = feature.worktree?.path ?? resolve(homedir(), ".t3/worktrees/lemon-tree", `orc-${taskId}-${featId}`);
-if (repairReport === undefined) {
+// With --t3 the worker is a T3 subagent (decision S4). T3 creates the worktree, so this script only gates and writes the brief.
+const t3 = args.includes("--t3");
+if (repairReport === undefined && !t3) {
   await $`git -C ${root} worktree add --quiet -b ${branch} ${worktree} ${base}`;
   await $`bun run pins`.cwd(worktree).quiet();
   await $`bun install --frozen-lockfile`.cwd(resolve(worktree, context.commands.cwd)).quiet();
@@ -81,7 +83,9 @@ const reportFile = resolve(dir, "attempts", `${featId}-${attempt}.gate.json`);
 await mkdir(resolve(dir, "attempts"), { recursive: true });
 await Bun.write(briefFile, [
   "You are a child task. Do not run a session kickoff script. Do not start subagents.",
-  `You implement exactly one ticket in the git worktree at your current directory, on branch \`${branch}\`. Product commands run from \`${context.commands.cwd}/\`. The worktree is prepared: the pinned clones and the dependencies are present.`,
+  t3
+    ? `You implement exactly one ticket in the git worktree at your current directory, on its current branch. Product commands run from \`${context.commands.cwd}/\`. First prepare the worktree: run \`bun run pins\` from the repository root, then \`bun install --frozen-lockfile\` from \`${context.commands.cwd}/\`. On this machine you can run only the static checks \`bun run typecheck:tsc\` and \`bun run lint\`. Do not run unit tests, the build, or the app here: a test machine runs them after your commit. Write the tests with care, because you cannot run them.`
+    : `You implement exactly one ticket in the git worktree at your current directory, on branch \`${branch}\`. Product commands run from \`${context.commands.cwd}/\`. The worktree is prepared: the pinned clones and the dependencies are present.`,
   "## context.json", "```json", contextText.trim(), "```",
   "## Ticket", "```json", ticketText, "```",
   ...(repairReport === undefined ? [] : [await repairSection(repairReport)]),
@@ -91,7 +95,7 @@ await Bun.write(briefFile, [
 
 const variant = option("--variant") ?? (attempt === 3 ? "max" : String(feature.route.options.variant ?? "high"));
 feature.status = "dispatched";
-feature.worktree = { path: worktree, branch, base_commit: base, head_commit: null };
+feature.worktree = { path: t3 ? (feature.worktree?.path ?? "") : worktree, branch, base_commit: base, head_commit: null };
 feature.attempts.push({ n: attempt, kind: repairReport === undefined ? "initial" : "repair", started_at: new Date().toISOString(), report: reportFile.slice(root.length + 1) });
 await Bun.write(resolve(tasksDir, taskId, `features/${featId}.json`), `${JSON.stringify(feature, null, 2)}\n`);
 task.status = derivedStatus(await Promise.all(task.feature_order.map(id => readFeature(taskId, id))));

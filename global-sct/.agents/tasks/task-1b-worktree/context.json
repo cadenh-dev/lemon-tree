@@ -1,0 +1,74 @@
+{
+  "schema": 2,
+  "task_id": "task-1b-worktree",
+  "wave": "1B",
+  "base": {
+    "commit": "1bcbd55384d92687df33f1a8239fa51a3de7e633",
+    "branch": "wave/1"
+  },
+  "pins": {
+    "agtop": "d516dcb4c0dc888ce07622cb60eb4619f707e8bd",
+    "toolkit": "6190c313ed3a01d8d3e55cf92622d2e9420729a8",
+    "fingerprint": "940287e30a29541c2a95a9fade8f6792552d12134bb3865e85a48f9d583c4047"
+  },
+  "language": "TypeScript (no `any`)",
+  "build_system": "Bun 1.4.4 with electron-vite. Scripts are in global-sct/package.json.",
+  "test_framework": "node:test with node:assert/strict, run by `bun test` from global-sct/tests (script `bun run test`). Playwright Electron specs are tests/*.spec.ts.",
+  "commands": {
+    "cwd": "global-sct",
+    "typecheck": "bun run typecheck:tsc",
+    "lint": "bun run lint",
+    "test": "bun run test",
+    "build": "bun run build"
+  },
+  "rules": [
+    "TypeScript only. Do not use the `any` type.",
+    "Never run `tsc` directly. Use `bun run typecheck:tsc` from global-sct/. A brief that says `tsc --noEmit` means this script.",
+    "Each ticket writes and runs the tests for its own module (override 1). Changes to existing tests need an approval in the ticket.",
+    "Zod is the schema library. Do not add Effect Schema.",
+    "Do not edit a locked file. Write a SCOPE REQUEST as an alternative.",
+    "Do not edit agtop/** or subagentclassifiertoolkit/**. They are read-only pinned clones.",
+    "Process roles come from agtop at run time. Do not write a process-role classifier.",
+    "Tests: avoid mocks, do not use globalThis.*, test the real implementation, and do not copy logic into a test.",
+    "Inline a value that is used one time. The main function shows the success path and helpers go below it.",
+    "Add comments only for constraints and surprising behavior. Write comments and reports in simple technical English (ASD-STE100).",
+    "UI: Hallmark OKLCH role tokens only. No Tailwind, no literal colors or font families, no shadows, no rounded corners.",
+    "Do not add a dependency. Do not change package.json or bun.lock."
+  ],
+  "relevant_files": [
+    "global-sct/src/shared/contracts.ts",
+    "global-sct/src/main/share-gate.ts",
+    "global-sct/tests/envelope.test.ts"
+  ],
+  "locked_files": [
+    "global-sct/src/shared/contracts.ts",
+    "global-sct/src/shared/acp-types.ts",
+    "global-sct/src/shared/ipc-channels.ts",
+    "global-sct/src/shared/harness-manifest.ts",
+    "global-sct/harnesses.json",
+    "global-sct/package.json",
+    "global-sct/bun.lock",
+    "global-sct/tsconfig*.json",
+    "global-sct/src/main/agtop-type-check.ts",
+    "global-sct/src/shared/boundary.ts",
+    "global-sct/src/shared/boundary-schemas.ts",
+    "pins.json",
+    "pins.lock.json"
+  ],
+  "key_patterns": "Unit tests are node:test files in global-sct/tests. Follow tests/envelope.test.ts: `import assert from 'node:assert/strict'`, `import { test } from 'node:test'`, and imports of product code with the .ts extension. The script `bun run test` lists its files by name; the lead adds a new file to it, so a worker does not edit package.json. Product code in src/main uses no semicolons, single quotes, and 2-space indent (see src/main/share-gate.ts). Start a subprocess with execFile or spawn and an argument array; never use a shell string. worktree-manager.ts exports `createWorktreeManager(options?: { worktreesRoot?: string; launchEditor?: (command: string, args: string[]) => Promise<void> }): WorktreeManager`. The default worktreesRoot is `join(homedir(), '.global-sct', 'worktrees')`. The default launchEditor starts the editor command detached with spawn and no shell. Tests pass a temporary worktreesRoot and their own launchEditor function that records its arguments; that is dependency injection, not a mock.",
+  "environment_constraints": "Linux x64, Bun 1.4.4. One git worktree for each ticket. A worker commits on its own branch only.",
+  "capabilities": [
+    "agtop.trees",
+    "agtop.kill",
+    "agtop.spawn-contained",
+    "agtop.roles",
+    "agtop.accelerators",
+    "agtop.lemonade-probe",
+    "agtop.worktree-detect",
+    "agtop.daemon",
+    "toolkit.select-target",
+    "toolkit.verify-unit",
+    "toolkit.plan-schema",
+    "toolkit.fix-brief"
+  ]
+}
