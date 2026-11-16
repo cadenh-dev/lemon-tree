@@ -8,9 +8,11 @@ Updated: 2026-11-15. Lead: `claudeAgent/claude-fable-5-2`. Read `decisions.json`
 |---|---|
 | Branches (local, not pushed) | `main` at `4a7e537` (equal to `origin/main`). `wave/0` holds Stage 0 and the trust base. `wave/T` is the Track T integration branch, on top of `wave/0` |
 | Pins | agtop `d516dcb` (track `master`), toolkit `6190c31` (track `main`). Fingerprint `940287e3…4047` in `pins.lock.json`. Both pins are ancestors of their tracks |
-| Base gate on `wave/0` | `check` 0, `typecheck:tsc` 0, 84 tests in 8 files, `build` 0, React Doctor 100 / 100, 22 orchestration tests |
+| Base gate on `wave/0` (this machine, before decision S4) | `check` 0, `typecheck:tsc` 0, 84 tests in 8 files, `build` 0, React Doctor 100 / 100, 22 orchestration tests |
+| Full gate on `wave/T` at `b927e77` (t3-ubuntu, Bun 1.4.4) | `pins:check` 0, `test:orc` 22 pass, `orc:validate` 0, `check` 0, `typecheck:tsc` 0, `test` 98 pass in 10 files, `build` 0, React Doctor 100 / 100. The VM has a display, `xvfb-run`, and Playwright; the UI tests did not run yet |
 | Phase 0 and Phase 1 | Complete: LT-0.1 to LT-0.10 and ORC-1 to ORC-6 |
-| Phase 2 (pilot) | `task-transport-tests` FEAT-001 (T-3) and FEAT-002 (T-10). See the ticket files for the current status |
+| Phase 2 (pilot) | Complete. T-3 merged at `578eb9f`, T-10 merged at `972b285`, 1 attempt each |
+| Phase 3 | Integration branch `wave/1` (for 1A to 1D), on top of `wave/T`. `task-1b-worktree` FEAT-001 (W1B-1) and `task-1a-process-bridge` FEAT-001 (W1A-1) are dispatched to T3 subagents. W2B-1 waits for a check that `node:sqlite` works under Bun and Electron 45 |
 
 ## How to run one ticket (decision S4)
 
