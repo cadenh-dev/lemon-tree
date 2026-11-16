@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Ticket W1A-1. Add src/main/process-bridge/capabilities.ts and agtop-adapter.ts: capability discovery by facts, schema validation of each agtop return value, and the degradation table (no method throws because agtop or one function is absent, except spawnContained, which rejects).",
-  "status": "verifying",
+  "status": "completed",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -203,9 +203,9 @@
       "n": 1,
       "kind": "initial",
       "started_at": "2026-11-16T04:59:22.234Z",
-      "report": "global-sct/.agents/tasks/task-1a-process-bridge/attempts/FEAT-001-1.gate.json"
+      "report": "t3-ubuntu:/home/caden/lt-wt/W1A-1.gate.json"
     }
   ],
   "blocked_reason": null,
-  "findings": "Ready for dispatch through a T3 subagent (decision S4)."
+  "findings": "Completed on 2026-11-15 in 1 attempt. Worker: opencode-go/deepseek-v4.1-flash, variant high, as a T3 subagent on this machine (decision S4); it ran typecheck and lint only. Files changed: global-sct/src/main/process-bridge/agtop-adapter.ts (185 lines), capabilities.ts (59 lines), and global-sct/tests/agtop-adapter.test.ts (11 tests; 3 use the real agtop, and the Linux process scan test skips on other systems). Gate C ran on t3-ubuntu (Bun 1.4.4) at 3d5a9b9 against base 51cebdf and passed: pins, scope, prepare, typecheck, lint, test, test-substance (the new tests fail on the base), verification, secret-scan. The ui check does not apply. The lead read the full diff and each test: each agtop return value passes through decodeBody, only spawnContained rejects, and no process.kill or role classifier exists. Follow-ups for W1A-4: (1) agtop-adapter.ts has the two pin SHAs as a constant, which a pin move makes stale; pass the pins from pins.lock.json or add a test that compares them. (2) spawnContained throws for a containmentMode outside the 5 known values; treat it as an open string set like the other upstream sets. Merge commit on wave/1: 0653f76. The lead added the test file to the test script in global-sct/package.json."
 }
