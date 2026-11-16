@@ -1,0 +1,9 @@
+{
+  "task_id": "task-2a-runner",
+  "task_description": "Wave 2A. The harness runner: the manifest template engine, then the ACP runner and the context bridge.",
+  "status": "in_progress",
+  "feature_order": [
+    "FEAT-001"
+  ],
+  "blocked_reason": null
+}

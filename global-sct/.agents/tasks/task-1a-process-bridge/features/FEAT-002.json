@@ -1,0 +1,114 @@
+{
+  "schema": 2,
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Ticket W1A-2. Add classifyPrompt in src/main/process-bridge/classify-prompt.ts: a deterministic TypeScript mapping from a user prompt to a PromptIntent (role, depth, evidence). It classifies the prompt text. It is not a process-role classifier and it calls no model.",
+  "status": "ready",
+  "depends_on": [],
+  "supersedes": null,
+  "scope": {
+    "allow": [
+      "global-sct/src/main/process-bridge/classify-prompt.ts",
+      "global-sct/tests/classify-prompt.test.ts"
+    ],
+    "deny": [
+      "global-sct/src/shared/contracts.ts",
+      "global-sct/src/shared/acp-types.ts",
+      "global-sct/src/shared/ipc-channels.ts",
+      "global-sct/src/shared/harness-manifest.ts",
+      "global-sct/harnesses.json",
+      "global-sct/package.json",
+      "global-sct/bun.lock",
+      "global-sct/tsconfig*.json",
+      "global-sct/src/main/agtop-type-check.ts",
+      "global-sct/src/shared/boundary.ts",
+      "global-sct/src/shared/boundary-schemas.ts",
+      "global-sct/eslint.config.mjs",
+      "global-sct/AGENTS.md",
+      "AGENTS.md",
+      "pins.json",
+      "pins.lock.json",
+      "scripts/**",
+      "package.json",
+      "agtop/**",
+      "subagentclassifiertoolkit/**",
+      "global-sct/.agents/**",
+      ".github/**",
+      "global-sct/.github/**",
+      "global-sct/.opencode/**",
+      "global-sct/opencode.json",
+      "docs/**",
+      ".opencode/**",
+      "opencode.json"
+    ],
+    "max_files": 2,
+    "max_lines": 600
+  },
+  "contracts": [
+    {
+      "symbol": "PromptRole,PromptIntent",
+      "repo": "workspace",
+      "path": "global-sct/src/shared/contracts.ts",
+      "startLine": 132,
+      "endLine": 133,
+      "sha256": "7a2d9fb63b9a573f4c90436f9f1406d12b438cea980f5a16260688c9cfac87fc",
+      "text": "export type PromptRole = 'implementation' | 'research' | 'review' | 'design' | 'test' | 'general'\nexport interface PromptIntent { role: PromptRole; depth: 1 | 2 | 3 | 4 | 5; evidence: string[] }",
+      "role": "implement"
+    }
+  ],
+  "steps": [
+    "Read the contract in this ticket, then global-sct/src/main/share-gate.ts (code style) and global-sct/tests/envelope.test.ts (test style).",
+    "Create classify-prompt.ts and export `classifyPrompt(prompt: string): PromptIntent`. Match keywords on the lower-case prompt as whole words or whole phrases (word boundaries), so 'address' does not match 'add'.",
+    "Role: use the FIRST rule in this order that has a match. review: review, audit, critique, 'code review', 'find bugs', 'look over'. test: 'write tests', 'add tests', 'add a test', 'unit test', 'test coverage', reproduce, 'failing test'. research: research, investigate, compare, survey, 'look up', 'find out', 'what is', 'how does', 'why does'. design: design, architect, architecture, plan, propose, proposal, tradeoff, 'trade-off', rfc, spec. implementation: implement, add, build, create, fix, refactor, migrate, write, update, change, remove, rename, port. No match: general.",
+    "Depth: start at 2. Add 1 when a breadth word matches: across, all, every, multiple, several, refactor, migrate, module, modules. Add 1 when a risk word matches: architecture, security, breaking, migration, concurrency, protocol, schema, 'data loss'. Add 1 when the prompt has more than 600 characters or has 3 or more lines that start with '-', '*', or a number and a period. Subtract 1 when a small-change word matches: typo, rename, format, 'one line', comment, wording. Each of the 4 rules applies at most one time. Clamp the result to 1..5.",
+    "Evidence: one string for the role rule in the form `role:<role> keyword \"<keyword>\"` (or `role:general no keyword`), then one string for each depth rule that applied, in the form `depth:+1 breadth \"<word>\"`, `depth:+1 risk \"<word>\"`, `depth:+1 size`, or `depth:-1 small \"<word>\"`. Use the first matching keyword in the list order above. An empty or whitespace prompt gives { role: 'general', depth: 1, evidence: ['empty prompt'] }.",
+    "Keep the keyword lists as data (arrays), and the function as a short success path with small helpers below it.",
+    "Create tests/classify-prompt.test.ts with one table of at least 20 prompts and their exact expected PromptIntent (role, depth, and the full evidence array), and one test that runs the table. Add the separate tests in tests.must_add. Work out each expected value by hand from the rules in this ticket, not by running the function.",
+    "Run `bun run typecheck:tsc` and `bun run lint` from global-sct/ and correct each error. Commit the two files with one commit."
+  ],
+  "acceptance_criteria": [
+    "classifyPrompt is a pure function: no I/O, no clock, no random value",
+    "The same prompt always gives the same result",
+    "The table has at least 20 prompts, with at least 2 for each of the 6 roles and each depth from 1 to 5 at least one time",
+    "Each table row asserts the full evidence array",
+    "The file contains no process-role logic and imports nothing from agtop",
+    "bun run typecheck:tsc, bun run lint, and bun run test pass"
+  ],
+  "verification": [
+    "bun run typecheck:tsc",
+    "bun run lint",
+    "bun run test"
+  ],
+  "tests": {
+    "files": [
+      "global-sct/tests/classify-prompt.test.ts"
+    ],
+    "must_add": [
+      "The table test: at least 20 prompts with their exact expected role, depth, and evidence",
+      "'Fix the typo in the README' gives role implementation, depth 1, evidence ['role:implementation keyword \"fix\"', 'depth:-1 small \"typo\"']",
+      "'Review the security of the login flow across all modules' gives role review, depth 4",
+      "'Please address the feedback' gives role general, depth 2, because 'address' does not match 'add'",
+      "The rule order decides: 'Review and then fix the parser' gives role review",
+      "The depth never leaves 1..5: a prompt with breadth, risk, and size signals gives 5, and a small-change prompt with no other signal gives 1",
+      "An empty prompt and a whitespace prompt give role general, depth 1, evidence ['empty prompt']"
+    ],
+    "min_cases": 7
+  },
+  "budget": {
+    "context_tokens": 24000,
+    "wall_clock_minutes": 45
+  },
+  "route": {
+    "providerInstanceId": "opencode",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "options": {
+      "variant": "high"
+    },
+    "classified_by": "lead-pinned",
+    "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
+  },
+  "worktree": null,
+  "attempts": [],
+  "blocked_reason": null,
+  "findings": "Ready for dispatch through a T3 subagent (decision S4)."
+}

@@ -3,7 +3,7 @@
   "task_id": "task-1a-process-bridge",
   "wave": "1A",
   "base": {
-    "commit": "1bcbd55384d92687df33f1a8239fa51a3de7e633",
+    "commit": "00f2cece6f6c3b3efb0210eebc3d3402e7655ecd",
     "branch": "wave/1"
   },
   "pins": {
