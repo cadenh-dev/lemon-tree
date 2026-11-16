@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "ticket": "task-orc-negative/FEAT-001",
+  "worktree": "/home/cadenh/.t3/worktrees/lemon-tree/t3-efdd24ed",
+  "base": "b46033963bc728c19ec361e1bb28780e858b281b",
+  "head": "f9e231f5f64593c590a68f5ce01d2af46fd4c094",
+  "result": "fail",
+  "failCode": "scope-violation",
+  "ledger": "not-recorded",
+  "checks": [
+    {
+      "n": 0,
+      "name": "pins",
+      "status": "pass",
+      "detail": []
+    },
+    {
+      "n": 1,
+      "name": "scope",
+      "status": "fail",
+      "detail": [
+        "denied:global-sct/src/shared/contracts.ts"
+      ],
+      "firstError": "denied:global-sct/src/shared/contracts.ts"
+    }
+  ]
+}

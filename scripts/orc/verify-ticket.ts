@@ -20,23 +20,6 @@ const SHELL_OPERATORS = /[;&|<>`$()]/;
 const SYNTHETIC_SECRET = "LEMON_TREE_SYNTHETIC_SECRET";
 const SECRET_PATTERNS = [/-----BEGIN [A-Z ]*PRIVATE KEY-----/, /\bsk-[A-Za-z0-9_-]{20,}/, /\bgh[pousr]_[A-Za-z0-9]{30,}/, /\bAKIA[0-9A-Z]{16}\b/];
 
-if (import.meta.main) {
-  const args = Bun.argv.slice(2);
-  const option = (name: string) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
-  const [taskId, featId] = args as [string, string];
-  if (taskId === undefined || featId === undefined) fail(2, "Usage: verify-ticket.ts <task-id> <feat-id> [--worktree <path>] [--base <commit>] [--report <file>] [--no-prepare]");
-  const { context } = await readTask(taskId);
-  const feature = await readFeature(taskId, featId);
-  const worktree = option("--worktree") ?? feature.worktree?.path;
-  if (worktree === undefined) fail(2, "The ticket has no worktree.path. Give --worktree.");
-  const report = await runGate({ ticket: `${taskId}/${featId}`, feature, context, worktree: resolve(worktree), base: option("--base") ?? feature.worktree?.base_commit ?? context.base.commit, prepare: !args.includes("--no-prepare") })
-    .catch((error: unknown) => fail(2, `harness-error: ${String(error)}`));
-  const text = `${JSON.stringify(report, null, 2)}\n`;
-  if (option("--report") !== undefined) await Bun.write(option("--report")!, text);
-  console.log(text);
-  process.exit(report.result === "pass" ? 0 : report.failCode === "stale-pins" ? 3 : 1);
-}
-
 function fail(code: number, message: string): never {
   console.error(message);
   process.exit(code);
@@ -156,4 +139,22 @@ async function secretScan(worktree: string, base: string) {
     if (/(^|\/)\.env(\.|$)/.test(file)) issues.push(`env-file-added:${file}`);
   }
   return [...new Set(issues)];
+}
+
+// The entry point is last, because it uses the constants and helpers above at once.
+if (import.meta.main) {
+  const args = Bun.argv.slice(2);
+  const option = (name: string) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
+  const [taskId, featId] = args as [string, string];
+  if (taskId === undefined || featId === undefined) fail(2, "Usage: verify-ticket.ts <task-id> <feat-id> [--worktree <path>] [--base <commit>] [--report <file>] [--no-prepare]");
+  const { context } = await readTask(taskId);
+  const feature = await readFeature(taskId, featId);
+  const worktree = option("--worktree") ?? feature.worktree?.path;
+  if (worktree === undefined) fail(2, "The ticket has no worktree.path. Give --worktree.");
+  const report = await runGate({ ticket: `${taskId}/${featId}`, feature, context, worktree: resolve(worktree), base: option("--base") ?? feature.worktree?.base_commit ?? context.base.commit, prepare: !args.includes("--no-prepare") })
+    .catch((error: unknown) => fail(2, `harness-error: ${String(error)}`));
+  const text = `${JSON.stringify(report, null, 2)}\n`;
+  if (option("--report") !== undefined) await Bun.write(option("--report")!, text);
+  console.log(text);
+  process.exit(report.result === "pass" ? 0 : report.failCode === "stale-pins" ? 3 : 1);
 }

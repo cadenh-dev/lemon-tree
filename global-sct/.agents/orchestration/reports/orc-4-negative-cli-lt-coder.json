@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "ticket": "task-orc-negative/FEAT-001",
+  "worktree": "/tmp/claude-1000/-home-cadenh-lemon-tree/1833b8d2-dbe6-4b50-bff3-e263088a96f7/scratchpad/wt-neg",
+  "base": "b46033963bc728c19ec361e1bb28780e858b281b",
+  "head": "660ef7d7c08e18275e2512b0acb0afe4b3fa166e",
+  "result": "fail",
+  "failCode": "typecheck",
+  "ledger": "not-recorded",
+  "checks": [
+    {
+      "n": 0,
+      "name": "pins",
+      "status": "pass",
+      "detail": []
+    },
+    {
+      "n": 1,
+      "name": "scope",
+      "status": "pass",
+      "detail": []
+    },
+    {
+      "n": 2,
+      "name": "prepare",
+      "status": "skipped",
+      "detail": [
+        "--no-prepare"
+      ]
+    },
+    {
+      "n": 3,
+      "name": "typecheck",
+      "status": "fail",
+      "detail": [
+        "bun run typecheck:tsc exited with 1"
+      ],
+      "firstError": "error: Script not found \"node_modules/@typescript/native/bin/tsc\"",
+      "output": "\n$ bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.node.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.web.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/relay/tsconfig.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/vscode/tsconfig.json\nerror: Script not found \"node_modules/@typescript/native/bin/tsc\"\nerror: script \"typecheck:tsc\" exited with code 1\n"
+    }
+  ]
+}
