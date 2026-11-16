@@ -27,7 +27,7 @@ Tests run only in the linked machines. This machine does coding (T3 subagents) a
 
 ## Open items
 
-- WIN11 baseline on `wave/T` at `b927e77`: `pins` 0, `pins:check` 0 (same fingerprint), `lint` 0, `typecheck:tsc` 0, `test` 95 pass and 3 skip in 10 files, `build` 0. Open: `bun install --frozen-lockfile` exits 1 in the `install-electron` postinstall ("Cannot find native binding" in `@electron-internal/extract-zip`), so the Electron binary is not installed there and UI tests and packaging cannot run on WIN11 yet. The winget installers for Git and Python need an administrator prompt; Git is the portable MinGit, and Python is absent, so the `toolkit.select-target` capability is missing on WIN11.
+- WIN11 baseline on `wave/T` at `b927e77`: `pins` 0, `pins:check` 0 (same fingerprint), `lint` 0, `typecheck:tsc` 0, `test` 95 pass and 3 skip in 10 files, `build` 0. Open: `bun install --frozen-lockfile` exits 1 in the `install-electron` postinstall ("Cannot find native binding" in `@electron-internal/extract-zip`), so the Electron binary is not installed there and UI tests and packaging cannot run on WIN11 yet. The winget installers for Git and Python need an administrator prompt; Git is the portable MinGit, and `python --version` fails. `pins:check` still passed there, so the capability probe for the toolkit is not explained yet.
 - `origin/1c/env-sdk-diagnostics` is not merged. Keep `packages/env` tickets away from `packages/env/src/index.ts` and `tests/env-sdk.test.ts` until the user merges it.
 - Gate C does not call the toolkit outcome ledger (`verify_unit.py`, `record_verification.py`). The gate report has `ledger: "not-recorded"`.
 - A harness with an id outside `HARNESS_IDS` still needs a change to the `HarnessId` type.
