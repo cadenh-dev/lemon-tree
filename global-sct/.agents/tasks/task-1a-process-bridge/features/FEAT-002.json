@@ -3,7 +3,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Ticket W1A-2. Add classifyPrompt in src/main/process-bridge/classify-prompt.ts: a deterministic TypeScript mapping from a user prompt to a PromptIntent (role, depth, evidence). It classifies the prompt text. It is not a process-role classifier and it calls no model.",
-  "status": "ready",
+  "status": "dispatched",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -107,8 +107,20 @@
     "classified_by": "lead-pinned",
     "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
   },
-  "worktree": null,
-  "attempts": [],
+  "worktree": {
+    "path": "",
+    "branch": "agent/task-1a-process-bridge/FEAT-002",
+    "base_commit": "00f2cece6f6c3b3efb0210eebc3d3402e7655ecd",
+    "head_commit": null
+  },
+  "attempts": [
+    {
+      "n": 1,
+      "kind": "initial",
+      "started_at": "2026-11-16T05:10:43.696Z",
+      "report": "global-sct/.agents/tasks/task-1a-process-bridge/attempts/FEAT-002-1.gate.json"
+    }
+  ],
   "blocked_reason": null,
   "findings": "Ready for dispatch through a T3 subagent (decision S4)."
 }

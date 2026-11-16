@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Ticket W2A-1. Add the template engine for the harness manifest in src/main/harness-template.ts: placeholder substitution, `{ json }` values, the headless argument order, and the deep merge of env templates. The ACP runner (a later ticket) calls it.",
-  "status": "ready",
+  "status": "dispatched",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -153,8 +153,20 @@
     "classified_by": "lead-pinned",
     "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
   },
-  "worktree": null,
-  "attempts": [],
+  "worktree": {
+    "path": "",
+    "branch": "agent/task-2a-runner/FEAT-001",
+    "base_commit": "00f2cece6f6c3b3efb0210eebc3d3402e7655ecd",
+    "head_commit": null
+  },
+  "attempts": [
+    {
+      "n": 1,
+      "kind": "initial",
+      "started_at": "2026-11-16T05:10:44.587Z",
+      "report": "global-sct/.agents/tasks/task-2a-runner/attempts/FEAT-001-1.gate.json"
+    }
+  ],
   "blocked_reason": null,
   "findings": "Ready for dispatch through a T3 subagent (decision S4)."
 }
