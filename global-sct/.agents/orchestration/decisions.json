@@ -119,6 +119,22 @@
       "ruling": "OpenCode CLI with the lt-coder agent. The lead creates one git worktree for each ticket and starts `opencode run --agent lt-coder --auto` in it as a background command under agtop. T3 delegate_task is not used for coding workers.",
       "evidence": "global-sct/.agents/orchestration/reports/orc-4-negative.md",
       "decidedAt": "2026-11-15"
+    },
+    {
+      "id": "S4",
+      "decision": "Workflow change by the user",
+      "decidedAt": "2026-11-15",
+      "supersedes": [
+        "S3",
+        "the 'platform checks only' part of S2",
+        "the 'DeepSeek only' rule of the execution prompt"
+      ],
+      "ruling": "All testing runs in the linked machines (WIN11 and t3-ubuntu), not on this machine. Coding runs on this machine (cadencachy) through T3 code subagents (delegate_task). The lead can use codex gpt-6-astra or gpt-6-luna, and provider Claude Zach (claudePersonal) with claude-fable-5-2, as needed.",
+      "consequences": [
+        "Gate C for a ticket runs on t3-ubuntu from a pushed branch. The lead pushes wave/* and agent/* branches to origin for that.",
+        "The lt-coder sandbox does not apply to T3 subagents (report orc-4-negative.md). Gate C and the review of the lead are the controls.",
+        "On this machine the lead runs only git-level checks (diff, scope). No typecheck, lint, test, build, or Playwright run here."
+      ]
     }
   ]
 }

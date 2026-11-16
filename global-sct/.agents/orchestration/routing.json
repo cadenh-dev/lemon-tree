@@ -19,7 +19,7 @@
     "repairOptions": {
       "variant": "max"
     },
-    "runtimeMode": null,
+    "runtimeMode": "full-access",
     "isolation": "worktree",
     "gate": "offpeak-scheduler",
     "gateProbe": {
@@ -27,17 +27,25 @@
       "exit": 0,
       "reason": "unmatched target"
     },
-    "dispatch": "opencode-cli",
-    "command": [
-      "opencode",
-      "run",
-      "--agent",
-      "lt-coder",
-      "--model",
-      "opencode-go/deepseek-v4.1-flash#<variant>",
-      "--auto"
-    ],
-    "note": "T3 delegate_task does not apply the lt-coder rules. See decisions.json S3."
+    "dispatch": "t3-delegate_task",
+    "command": null,
+    "note": "Decision S4. full-access is needed because the other T3 modes wait for a human approval for each shell command. Workers do not run tests locally; tests run in the VMs.",
+    "environment": "local",
+    "alternatives": [
+      {
+        "providerInstanceId": "codex",
+        "model": "gpt-6-astra"
+      },
+      {
+        "providerInstanceId": "codex",
+        "model": "gpt-6-luna"
+      },
+      {
+        "providerInstanceId": "claudePersonal",
+        "model": "claude-fable-5-2",
+        "displayName": "Claude Zach"
+      }
+    ]
   },
   "research": {
     "providerInstanceId": "antigravity",
@@ -95,6 +103,26 @@
       "research": true,
       "hasProject": false,
       "note": "opencode and antigravity can run child tasks. claudeAgent is not authenticated. No lemon-tree project exists there. Use is pending a user decision."
+    }
+  },
+  "testing": {
+    "decision": "S4",
+    "linux": {
+      "environmentId": "775b304a-37b8-471a-a9b4-5c1ac424ff46",
+      "projectId": "mcp:a5b0a85b-9a03-4789-b872-705afa297193",
+      "path": "/home/caden/lemon-tree"
+    },
+    "windows": {
+      "environmentId": "eda5b895-30ee-4b64-9cfa-2a754aef873a",
+      "path": "C:\\Users\\caden\\lemon-tree",
+      "status": "clone failed two times; diagnosis is in progress"
+    },
+    "runner": {
+      "providerInstanceId": "codex",
+      "model": "gpt-6-luna",
+      "options": {
+        "reasoningEffort": "low"
+      }
     }
   }
 }

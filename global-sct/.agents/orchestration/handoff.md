@@ -1,0 +1,39 @@
+# Lemon Tree orchestration handoff
+
+Updated: 2026-11-15. Lead: `claudeAgent/claude-fable-5-2`. Read `decisions.json` and `routing.json` in this folder first.
+
+## State
+
+| Item | Value |
+|---|---|
+| Branches (local, not pushed) | `main` at `4a7e537` (equal to `origin/main`). `wave/0` holds Stage 0 and the trust base. `wave/T` is the Track T integration branch, on top of `wave/0` |
+| Pins | agtop `d516dcb` (track `master`), toolkit `6190c31` (track `main`). Fingerprint `940287e3…4047` in `pins.lock.json`. Both pins are ancestors of their tracks |
+| Base gate on `wave/0` | `check` 0, `typecheck:tsc` 0, 84 tests in 8 files, `build` 0, React Doctor 100 / 100, 22 orchestration tests |
+| Phase 0 and Phase 1 | Complete: LT-0.1 to LT-0.10 and ORC-1 to ORC-6 |
+| Phase 2 (pilot) | `task-transport-tests` FEAT-001 (T-3) and FEAT-002 (T-10). See the ticket files for the current status |
+
+## How to run one ticket (decision S4)
+
+Tests run only in the linked machines. This machine does coding (T3 subagents) and git-level checks.
+
+1. `bun run orc:validate`. Write the ticket and commit it on `wave/<wave>`.
+2. Dispatch the coding worker with T3 `delegate_task` on this machine: `isolation: "worktree"`, `runtimeMode: "full-access"`, the brief from the ticket. Default target `opencode` / `opencode-go/deepseek-v4.1-flash`. Codex `gpt-6-astra` or `gpt-6-luna`, and `claudePersonal` / `claude-fable-5-2`, are permitted as needed. The brief tells the worker not to run tests, because tests run in the VM.
+3. When the worker stops, push its branch and `wave/<wave>` to origin.
+4. Run Gate C on t3-ubuntu with a `delegate_task` there (codex `gpt-6-luna`): fetch, add a worktree for the agent branch, and run `bun scripts/orc/verify-ticket.ts <task> <feat> --worktree <path> --report <file>`. The runner returns the report JSON verbatim. Windows checks run on WIN11 in the same way.
+5. On a pass: read the full diff and each test, merge `--no-ff` into `wave/<wave>`, add each new test file to the `test` script, push, and run the full gate in the VM. Write `findings` and set `completed`.
+6. On a failure: a new `delegate_task` with the failed check and the output tail. Attempt 3 is the last.
+
+## Open items
+
+- WIN11: `t3_project_clone` of `cadenh-dev/lemon-tree` failed two times ("The repository could not be cloned"). The cause is not known. t3-ubuntu has the project at `/home/caden/lemon-tree` (project id `mcp:a5b0a85b-9a03-4789-b872-705afa297193`), at `origin/main`.
+- `origin/1c/env-sdk-diagnostics` is not merged. Keep `packages/env` tickets away from `packages/env/src/index.ts` and `tests/env-sdk.test.ts` until the user merges it.
+- Gate C does not call the toolkit outcome ledger (`verify_unit.py`, `record_verification.py`). The gate report has `ledger: "not-recorded"`.
+- A harness with an id outside `HARNESS_IDS` still needs a change to the `HarnessId` type.
+- The research sandbox cannot remove write permission before a run. The post-run check (`route-research.ts check`) is the control.
+- `harnesses.json` records OpenCode 2.2.6 with 1.x config keys. The installed version is 2.3.0 (D13).
+- `docs/` at the workspace root is not committed. It holds the plan, the specification, and the execution prompt.
+- No branch is pushed. The user approved pushes of `wave/*` and `agent/*` only.
+
+## Next command
+
+`bun run orc:validate && bun scripts/orc/impact.ts status`, then read `global-sct/.agents/tasks/task-transport-tests/features/*.json`.

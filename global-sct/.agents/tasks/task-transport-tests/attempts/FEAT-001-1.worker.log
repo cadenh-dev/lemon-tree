@@ -11,3 +11,339 @@ I'll start by reading the product code and the test style reference.
 > lt-coder · deepseek-v4.1-flash
 [0m✗ [0mgit status --short; git branch --show-current failed
 [91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0mpwd failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0mecho hi failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m→ [0mRead global-sct/tsconfig.node.json 
+[0m→ [0mRead global-sct/eslint.config.mjs 
+> lt-coder · deepseek-v4.1-flash
+Now I'll write the test file.
+[0m← [0mWrite global-sct/tests/direct-frame.test.ts
+Created file successfully: global-sct/tests/direct-frame.test.ts
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun test direct-frame.test.ts
+bun test v1.4.4 (38afee6c8)
+
+direct-frame.test.ts:
+34 |   assert.equal(later[0]?.kind, 3)
+35 |   assert.equal(later[0]?.body.toString(), 'third')
+36 | })
+37 | 
+38 | test('a frame with length 0 is rejected', () => {
+39 |   assert.throws(() => new FrameReader().push(lengthHeader(0)), /^The Direct frame is too large\.$/)
+              ^
+AssertionError: The input did not match the regular expression /^The Direct frame is too large\.$/. Input:
+
+'Error: The Direct frame is too large.'
+
+ generatedMessage: true,
+   expected: /^The Direct frame is too large\.$/,
+   operator: "throws",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:39:10
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+
+ 8 |   push(chunk: Buffer): { kind: number; body: Buffer }[] {
+ 9 |     this.buffer = Buffer.concat([this.buffer, chunk])
+10 |     const frames: { kind: number; body: Buffer }[] = []
+11 |     while (this.buffer.length >= 4) {
+12 |       const length = this.buffer.readUInt32BE(0)
+13 |       if (length < 1 || length > frameBodyLimit) throw new Error('The Direct frame is too large.')
+                                                                ^
+error: The Direct frame is too large.
+      at push (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/src/main/direct-frame.ts:13:60)
+      at getActual (node:assert:340:7)
+      at throws (node:assert:430:33)
+      at <anonymous> (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:39:10)
+      at run (node:async_hooks:144:29)
+      at <anonymous> (node:test:1445:26)
+      at executeTestNode (node:test:1448:45)
+      at <anonymous> (node:test:1591:20)
+(fail) a frame with length 0 is rejected [1.13ms]
+38 | test('a frame with length 0 is rejected', () => {
+39 |   assert.throws(() => new FrameReader().push(lengthHeader(0)), /^The Direct frame is too large\.$/)
+40 | })
+41 | 
+42 | test('a frame length above the body limit is rejected as soon as the header arrives', () => {
+43 |   assert.throws(() => new FrameReader().push(lengthHeader(frameBodyLimit + 1)), /^The Direct frame is too large\.$/)
+              ^
+AssertionError: The input did not match the regular expression /^The Direct frame is too large\.$/. Input:
+
+'Error: The Direct frame is too large.'
+
+ generatedMessage: true,
+   expected: /^The Direct frame is too large\.$/,
+   operator: "throws",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:43:10
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+
+ 8 |   push(chunk: Buffer): { kind: number; body: Buffer }[] {
+ 9 |     this.buffer = Buffer.concat([this.buffer, chunk])
+10 |     const frames: { kind: number; body: Buffer }[] = []
+11 |     while (this.buffer.length >= 4) {
+12 |       const length = this.buffer.readUInt32BE(0)
+13 |       if (length < 1 || length > frameBodyLimit) throw new Error('The Direct frame is too large.')
+                                                                ^
+error: The Direct frame is too large.
+      at push (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/src/main/direct-frame.ts:13:60)
+      at getActual (node:assert:340:7)
+      at throws (node:assert:430:33)
+      at <anonymous> (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:43:10)
+      at run (node:async_hooks:144:29)
+      at <anonymous> (node:test:1445:26)
+      at executeTestNode (node:test:1448:45)
+      at <anonymous> (node:test:1591:20)
+(fail) a frame length above the body limit is rejected as soon as the header arrives [0.11ms]
+56 |   assert.deepEqual(read.payload, payload)
+57 |   assert.deepEqual(read.wrappedKey, wrappedKey)
+58 | })
+59 | 
+60 | test('readTransferBody rejects a body with payload length 0, no wrapped key, or a short length', () => {
+61 |   assert.throws(() => readTransferBody(Buffer.concat([lengthHeader(0), Buffer.from('key')])), /^The Direct transfer is invalid\.$/)
+              ^
+AssertionError: The input did not match the regular expression /^The Direct transfer is invalid\.$/. Input:
+
+'Error: The Direct transfer is invalid.'
+
+ generatedMessage: true,
+   expected: /^The Direct transfer is invalid\.$/,
+   operator: "throws",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:61:10
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+
+37 | }
+38 | 
+39 | export function readTransferBody(body: Buffer): { payload: Buffer; wrappedKey: Buffer } {
+40 |   if (body.length < 5) throw new Error('The Direct transfer is incomplete.')
+41 |   const length = body.readUInt32BE(0)
+42 |   if (length === 0 || length > transferLimit || body.length <= 4 + length) throw new Error('The Direct transfer is invalid.')
+                                                                                          ^
+error: The Direct transfer is invalid.
+      at readTransferBody (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/src/main/direct-frame.ts:42:86)
+      at getActual (node:assert:340:7)
+      at throws (node:assert:430:33)
+      at <anonymous> (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:61:10)
+      at run (node:async_hooks:144:29)
+      at <anonymous> (node:test:1445:26)
+      at executeTestNode (node:test:1448:45)
+      at <anonymous> (node:test:1591:20)
+(fail) readTransferBody rejects a body with payload length 0, no wrapped key, or a short length [0.11ms]
+64 | })
+65 | 
+66 | test('readTransferBody rejects a wrapped key above the limit and accepts the limit', () => {
+67 |   const payload = Buffer.from('p')
+68 |   const tooLarge = transferBody(payload, Buffer.alloc(wrappedKeyLimit + 1))
+69 |   assert.throws(() => readTransferBody(tooLarge), /^The Direct wrapped key is invalid\.$/)
+              ^
+AssertionError: The input did not match the regular expression /^The Direct wrapped key is invalid\.$/. Input:
+
+'Error: The Direct wrapped key is invalid.'
+
+ generatedMessage: true,
+   expected: /^The Direct wrapped key is invalid\.$/,
+   operator: "throws",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:69:10
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+
+39 | export function readTransferBody(body: Buffer): { payload: Buffer; wrappedKey: Buffer } {
+40 |   if (body.length < 5) throw new Error('The Direct transfer is incomplete.')
+41 |   const length = body.readUInt32BE(0)
+42 |   if (length === 0 || length > transferLimit || body.length <= 4 + length) throw new Error('The Direct transfer is invalid.')
+43 |   const wrappedKey = body.subarray(4 + length)
+44 |   if (wrappedKey.length === 0 || wrappedKey.length > wrappedKeyLimit) throw new Error('The Direct wrapped key is invalid.')
+                                                                                     ^
+error: The Direct wrapped key is invalid.
+      at readTransferBody (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/src/main/direct-frame.ts:44:81)
+      at getActual (node:assert:340:7)
+      at throws (node:assert:430:33)
+      at <anonymous> (/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001/global-sct/tests/direct-frame.test.ts:69:10)
+      at run (node:async_hooks:144:29)
+      at <anonymous> (node:test:1445:26)
+      at executeTestNode (node:test:1448:45)
+      at <anonymous> (node:test:1591:20)
+(fail) readTransferBody rejects a wrapped key above the limit and accepts the limit [0.10ms]
+
+ 3 pass
+ 4 fail
+Ran 7 tests across 1 file. [14.00ms]
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0mpython3 - <<'EOF'
+import re
+p='tests/direct-frame.test.ts'
+s=open(p).read()
+s=s.replace("""/^The Direct frame is too large\\.$/""", """{ message: 'The Direct frame is too large.' }""")
+s=s.replace("""/^The Direct transfer is invalid\\.$/""", """{ message: 'The Direct transfer is invalid.' }""")
+s=s.replace("""/^The Direct transfer is incomplete\\.$/""", """{ message: 'The Direct transfer is incomplete.' }""")
+s=s.replace("""/^The Direct wrapped key is invalid\\.$/""", """{ message: 'The Direct wrapped key is invalid.' }""")
+open(p,'w').write(s)
+EOF
+grep -n "message:" tests/direct-frame.test.ts failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m→ [0mRead global-sct/tests/direct-frame.test.ts [90m[offset=36, limit=40][0m
+> lt-coder · deepseek-v4.1-flash
+[0m← [0mEdit global-sct/tests/direct-frame.test.ts
+Index: global-sct/tests/direct-frame.test.ts
+===================================================================
+--- global-sct/tests/direct-frame.test.ts
++++ global-sct/tests/direct-frame.test.ts
+@@ -35,9 +35,9 @@
+   assert.equal(later[0]?.body.toString(), 'third')
+ })
+ 
+ test('a frame with length 0 is rejected', () => {
+-  assert.throws(() => new FrameReader().push(lengthHeader(0)), /^The Direct frame is too large\.$/)
++  assert.throws(() => new FrameReader().push(lengthHeader(0)), { message: 'The Direct frame is too large.' })
+ })
+ 
+ test('a frame length above the body limit is rejected as soon as the header arrives', () => {
+   assert.throws(() => new FrameReader().push(lengthHeader(frameBodyLimit + 1)), /^The Direct frame is too large\.$/)
+
+[0m← [0mEdit global-sct/tests/direct-frame.test.ts
+Index: global-sct/tests/direct-frame.test.ts
+===================================================================
+--- global-sct/tests/direct-frame.test.ts
++++ global-sct/tests/direct-frame.test.ts
+@@ -39,9 +39,9 @@
+   assert.throws(() => new FrameReader().push(lengthHeader(0)), { message: 'The Direct frame is too large.' })
+ })
+ 
+ test('a frame length above the body limit is rejected as soon as the header arrives', () => {
+-  assert.throws(() => new FrameReader().push(lengthHeader(frameBodyLimit + 1)), /^The Direct frame is too large\.$/)
++  assert.throws(() => new FrameReader().push(lengthHeader(frameBodyLimit + 1)), { message: 'The Direct frame is too large.' })
+   // The body limit is inclusive. An incomplete valid frame gives no error and no frame.
+   assert.deepEqual(new FrameReader().push(lengthHeader(frameBodyLimit)), [])
+ })
+ 
+
+[0m← [0mEdit global-sct/tests/direct-frame.test.ts
+Index: global-sct/tests/direct-frame.test.ts
+===================================================================
+--- global-sct/tests/direct-frame.test.ts
++++ global-sct/tests/direct-frame.test.ts
+@@ -57,11 +57,11 @@
+   assert.deepEqual(read.wrappedKey, wrappedKey)
+ })
+ 
+ test('readTransferBody rejects a body with payload length 0, no wrapped key, or a short length', () => {
+-  assert.throws(() => readTransferBody(Buffer.concat([lengthHeader(0), Buffer.from('key')])), /^The Direct transfer is invalid\.$/)
+-  assert.throws(() => readTransferBody(transferBody(Buffer.from('p'), Buffer.alloc(0))), /^The Direct transfer is invalid\.$/)
+-  assert.throws(() => readTransferBody(Buffer.alloc(4)), /^The Direct transfer is incomplete\.$/)
++  assert.throws(() => readTransferBody(Buffer.concat([lengthHeader(0), Buffer.from('key')])), { message: 'The Direct transfer is invalid.' })
++  assert.throws(() => readTransferBody(transferBody(Buffer.from('p'), Buffer.alloc(0))), { message: 'The Direct transfer is invalid.' })
++  assert.throws(() => readTransferBody(Buffer.alloc(4)), { message: 'The Direct transfer is incomplete.' })
+ })
+ 
+ test('readTransferBody rejects a wrapped key above the limit and accepts the limit', () => {
+   const payload = Buffer.from('p')
+
+[0m← [0mEdit global-sct/tests/direct-frame.test.ts
+Index: global-sct/tests/direct-frame.test.ts
+===================================================================
+--- global-sct/tests/direct-frame.test.ts
++++ global-sct/tests/direct-frame.test.ts
+@@ -65,8 +65,8 @@
+ 
+ test('readTransferBody rejects a wrapped key above the limit and accepts the limit', () => {
+   const payload = Buffer.from('p')
+   const tooLarge = transferBody(payload, Buffer.alloc(wrappedKeyLimit + 1))
+-  assert.throws(() => readTransferBody(tooLarge), /^The Direct wrapped key is invalid\.$/)
++  assert.throws(() => readTransferBody(tooLarge), { message: 'The Direct wrapped key is invalid.' })
+   const read = readTransferBody(transferBody(payload, Buffer.alloc(wrappedKeyLimit)))
+   assert.deepEqual(read.wrappedKey, Buffer.alloc(wrappedKeyLimit))
+ })
+
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun test direct-frame.test.ts
+bun test v1.4.4 (38afee6c8)
+
+ 7 pass
+ 0 fail
+Ran 7 tests across 1 file. [16.00ms]
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run typecheck:tsc
+$ bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.node.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.web.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/relay/tsconfig.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/vscode/tsconfig.json
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run lint
+$ eslint . --max-warnings 0
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run test
+$ cd tests && bun test projects.test.ts vault.test.ts runtime.test.ts sharing.test.ts envelope.test.ts harnesses.test.ts workspace-link.test.ts boundary.test.ts
+bun test v1.4.4 (38afee6c8)
+
+ 84 pass
+ 0 fail
+Ran 84 tests across 8 files. [16.87s]
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mgit add global-sct/tests/direct-frame.test.ts && git commit -m "test: add unit tests for the Direct frame codec" -m "Test FrameReader, encodeFrame, transferBody, and readTransferBody with real buffers. The product code does not change."
+[agent/task-transport-tests/FEAT-001 531718c] test: add unit tests for the Direct frame codec
+ 1 file changed, 72 insertions(+)
+ create mode 100644 global-sct/tests/direct-frame.test.ts
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mgit show --stat --oneline HEAD; git status --short
+531718c test: add unit tests for the Direct frame codec
+ global-sct/tests/direct-frame.test.ts | 72 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
+> lt-coder · deepseek-v4.1-flash
+[0m→ [0mRead global-sct/tests/direct-frame.test.ts 
+> lt-coder · deepseek-v4.1-flash
+## Result
+
+I added the Direct frame codec unit tests. The product code does not change.
+
+### Files changed
+- `global-sct/tests/direct-frame.test.ts` (new file, 72 lines). One commit: `531718c test: add unit tests for the Direct frame codec`.
+
+### Test cases that cover `tests.must_add`
+1. Split length header and split body give no frame until the last byte, then one frame with kind 7 and body `hello`.
+2. Two frames in one chunk give two frames in order; a later chunk gives the next frame.
+3. Length 0 is rejected with `The Direct frame is too large.`
+4. Length `1 + 4 + transferLimit + wrappedKeyLimit + 1` is rejected with only the 4 header bytes; the same value minus 1 does not throw and gives no frame.
+5. `encodeFrame` and `transferBody` round-trip through `FrameReader` and `readTransferBody`.
+6. `readTransferBody` rejects payload length 0, no wrapped key, and a body of 4 bytes.
+7. A wrapped key of 4,097 bytes is rejected with `The Direct wrapped key is invalid.`; 4,096 bytes is accepted.
+
+Notes:
+- `frameBodyLimit` is private in the product code, so the test derives it from the exported `transferLimit` and `wrappedKeyLimit`. A comment records this constraint.
+- The largest buffer in the test is 4,101 bytes, below the 64 KiB limit.
+- Error checks use the `{ message }` form of `assert.throws`. A regex with `^` and `$` fails because Node compares against `Error: <message>`.
+
+### Verification commands (from `global-sct/`)
+| Command | Exit code |
+|---|---|
+| `bun test direct-frame.test.ts` (from `global-sct/tests`) | 0 (7 pass, 0 fail) |
+| `bun run typecheck:tsc` | 0 |
+| `bun run lint` | 0 |
+| `bun run test` | 0 (84 pass, 0 fail) |
+
+`bun run test` lists its files by name, so it does not include the new file. The lead adds `direct-frame.test.ts` to that list. I did not edit `package.json`.
+
+### SCOPE REQUEST
+None.

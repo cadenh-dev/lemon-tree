@@ -6,3 +6,190 @@ I'll start by reading the relevant files.
 [0m→ [0mRead global-sct/tests/envelope.test.ts 
 [0m→ [0mRead global-sct/src/main/share-gate.ts 
 > lt-coder · deepseek-v4.1-flash
+[0m✗ [0mcd global-sct && sed -n '1,80p' package.json && ls tests failed
+[91m[1mError: [0mPermission denied: shell
+[0m✗ [0mcd global-sct && grep -n "DeliveryMode" src/shared/transport.ts | head -20 failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0msed -n '1,80p' package.json; ls tests failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0mpwd failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0mgrep -n '"test"' package.json failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m→ [0mRead global-sct/package.json 
+[0m→ [0mRead global-sct/src/shared/transport.ts [90m[limit=60][0m
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0mecho ok failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m✱ [0mGlob "**/tests/*.test.ts" [90min global-sct/tests · 0 matches[0m
+[0m✱ [0mGrep "MockTimers|mock\.timers|enable\(options" [90min global-sct/node_modules/bun-types · 0 matches[0m
+> lt-coder · deepseek-v4.1-flash
+[0m✱ [0mGrep "mock" [90min global-sct/node_modules/bun-types/test.d.ts · 30 matches[0m
+[0m✱ [0mGlob "tests/**/*.ts" [90min global-sct · 13 matches[0m
+> lt-coder · deepseek-v4.1-flash
+[0m✱ [0mGrep "MockTimers|mock:|timers:" [90min global-sct/node_modules/@types/node/test.d.ts · 12 matches[0m
+[0m✱ [0mGrep "t\.mock" [90min global-sct · 0 matches[0m
+> lt-coder · deepseek-v4.1-flash
+Shell execution is denied in this session, so I will write the test file carefully and then retry the commands.
+[0m← [0mWrite global-sct/tests/share-gate.test.ts
+Created file successfully: global-sct/tests/share-gate.test.ts
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun test share-gate.test.ts
+bun test v1.4.4 (38afee6c8)
+
+ 7 pass
+ 0 fail
+Ran 7 tests across 1 file. [31.00ms]
+> lt-coder · deepseek-v4.1-flash
+[0m✗ [0mbun run typecheck:tsc; echo "typecheck exit: $?" failed
+[91m[1mError: [0mPermission denied: shell
+[0m✗ [0mbun run lint; echo "lint exit: $?" failed
+[91m[1mError: [0mPermission denied: shell
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run typecheck:tsc
+$ bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.node.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.web.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/relay/tsconfig.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/vscode/tsconfig.json
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run lint
+$ eslint . --max-warnings 0
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run test
+$ cd tests && bun test projects.test.ts vault.test.ts runtime.test.ts sharing.test.ts envelope.test.ts harnesses.test.ts workspace-link.test.ts boundary.test.ts
+bun test v1.4.4 (38afee6c8)
+
+ 84 pass
+ 0 fail
+Ran 84 tests across 8 files. [16.68s]
+> lt-coder · deepseek-v4.1-flash
+[0m← [0mEdit global-sct/tests/share-gate.test.ts
+Index: global-sct/tests/share-gate.test.ts
+===================================================================
+--- global-sct/tests/share-gate.test.ts
++++ global-sct/tests/share-gate.test.ts
+@@ -79,18 +79,24 @@
+   assert.equal(secondRuns, 1)
+ })
+ 
+ test('clear on lock rejects the active request and each queued request', async () => {
++  let runs = 0
++  const send = async () => {
++    runs += 1
++    return 'sent'
++  }
+   const { gate } = createGate()
+   const outcomes = [
+-    settled(gate.run(summary, async () => 'sent')),
+-    settled(gate.run({ ...summary, recipient: 'Carol laptop' }, async () => 'sent')),
+-    settled(gate.run({ ...summary, recipient: 'Dave laptop' }, async () => 'sent'))
++    settled(gate.run(summary, send)),
++    settled(gate.run({ ...summary, recipient: 'Carol laptop' }, send)),
++    settled(gate.run({ ...summary, recipient: 'Dave laptop' }, send))
+   ]
+ 
+   gate.clear()
+   assert.equal(gate.current(), null)
+   for (const outcome of outcomes) assert.equal(await outcome, locked)
++  assert.equal(runs, 0)
+ })
+ 
+ test('a second confirm rejects while the passphrase is being checked', async () => {
+   let release = () => {}
+
+[0m← [0mEdit global-sct/tests/share-gate.test.ts
+Index: global-sct/tests/share-gate.test.ts
+===================================================================
+--- global-sct/tests/share-gate.test.ts
++++ global-sct/tests/share-gate.test.ts
+@@ -125,17 +125,23 @@
+   assert.equal(runs, 1)
+ })
+ 
+ test('a request waits when eight requests are already queued', async () => {
++  let runs = 0
++  const send = async () => {
++    runs += 1
++    return 'sent'
++  }
+   const { gate } = createGate()
+   const outcomes = Array.from({ length: 9 }, (_, index) =>
+-    settled(gate.run({ ...summary, recipient: `Peer ${index}` }, async () => 'sent')))
++    settled(gate.run({ ...summary, recipient: `Peer ${index}` }, send)))
+   assert.equal(gate.current()?.recipient, 'Peer 0')
+ 
+-  await assert.rejects(gate.run(summary, async () => 'sent'), /Wait for the current share confirmation to finish/)
++  await assert.rejects(gate.run(summary, send), /Wait for the current share confirmation to finish/)
+ 
+   gate.clear()
+   for (const outcome of outcomes) assert.equal(await outcome, locked)
++  assert.equal(runs, 0)
+ })
+ 
+ test('confirm rejects a wrong id, a missing passphrase, and a call with no request', async () => {
+   let runs = 0
+
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun test share-gate.test.ts
+bun test v1.4.4 (38afee6c8)
+
+ 7 pass
+ 0 fail
+Ran 7 tests across 1 file. [31.00ms]
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run typecheck:tsc
+$ bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.node.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p tsconfig.web.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/relay/tsconfig.json && bun node_modules/@typescript/native/bin/tsc --noEmit -p packages/vscode/tsconfig.json
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run lint
+$ eslint . --max-warnings 0
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mbun run test
+$ cd tests && bun test projects.test.ts vault.test.ts runtime.test.ts sharing.test.ts envelope.test.ts harnesses.test.ts workspace-link.test.ts boundary.test.ts
+bun test v1.4.4 (38afee6c8)
+
+ 84 pass
+ 0 fail
+Ran 84 tests across 8 files. [16.86s]
+> lt-coder · deepseek-v4.1-flash
+[0m→ [0mRead global-sct/tests/share-gate.test.ts 
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mgit status --short
+?? global-sct/tests/share-gate.test.ts
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mgit add global-sct/tests/share-gate.test.ts
+(no output)
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mgit commit -m "Add unit tests for the share gate" -m "The tests cover wrong passphrases, expiry, cancel, lock clear, a second confirm, the queue limit, and input validation. The product code does not change."
+[agent/task-transport-tests/FEAT-002 2a2eb09] Add unit tests for the share gate
+ 1 file changed, 182 insertions(+)
+ create mode 100644 global-sct/tests/share-gate.test.ts
+> lt-coder · deepseek-v4.1-flash
+[0m$ [0mgit status --short; git log --oneline -1
+2a2eb09 Add unit tests for the share gate
+> lt-coder · deepseek-v4.1-flash
+## Files changed
+
+- `global-sct/tests/share-gate.test.ts` (new, 182 lines, 7 tests)
+
+The tests use the real `ShareGate`, a real `verify` function, and an `execute` counter. Only the expiry test uses `t.mock.timers` with `setTimeout` and `Date`.
+
+## Commands
+
+| Command | Directory | Exit code |
+|---|---|---|
+| `bun test share-gate.test.ts` | `global-sct/tests` | 0 (7 pass, 0 fail) |
+| `bun run typecheck:tsc` | `global-sct` | 0 |
+| `bun run lint` | `global-sct` | 0 |
+| `bun run test` | `global-sct` | 0 (84 pass, 0 fail) |
+
+Commit: `2a2eb09 Add unit tests for the share gate` on `agent/task-transport-tests/FEAT-002`. The worktree is clean.
+
+## Note for the lead
+
+`bun run test` does not include `share-gate.test.ts` because the script lists its files by name and `global-sct/package.json` is locked. Add `share-gate.test.ts` to the `test` script to run the new file in the full suite.
+
+## SCOPE REQUEST
+
+None.
