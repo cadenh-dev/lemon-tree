@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Ticket W1A-1. Add src/main/process-bridge/capabilities.ts and agtop-adapter.ts: capability discovery by facts, schema validation of each agtop return value, and the degradation table (no method throws because agtop or one function is absent, except spawnContained, which rejects).",
-  "status": "ready",
+  "status": "dispatched",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -192,8 +192,20 @@
     "classified_by": "lead-pinned",
     "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
   },
-  "worktree": null,
-  "attempts": [],
+  "worktree": {
+    "path": "",
+    "branch": "agent/task-1a-process-bridge/FEAT-001",
+    "base_commit": "1bcbd55384d92687df33f1a8239fa51a3de7e633",
+    "head_commit": null
+  },
+  "attempts": [
+    {
+      "n": 1,
+      "kind": "initial",
+      "started_at": "2026-11-16T04:59:22.234Z",
+      "report": "global-sct/.agents/tasks/task-1a-process-bridge/attempts/FEAT-001-1.gate.json"
+    }
+  ],
   "blocked_reason": null,
   "findings": "Ready for dispatch through a T3 subagent (decision S4)."
 }

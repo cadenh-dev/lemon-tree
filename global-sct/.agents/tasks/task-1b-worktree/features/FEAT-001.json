@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Ticket W1B-1. Implement the WorktreeManager contract in src/main/worktree-manager.ts with real git commands: create, autoCommit, diffSummary, merge, discard, and openInEditor.",
-  "status": "ready",
+  "status": "dispatched",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -122,8 +122,20 @@
     "classified_by": "lead-pinned",
     "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
   },
-  "worktree": null,
-  "attempts": [],
+  "worktree": {
+    "path": "",
+    "branch": "agent/task-1b-worktree/FEAT-001",
+    "base_commit": "1bcbd55384d92687df33f1a8239fa51a3de7e633",
+    "head_commit": null
+  },
+  "attempts": [
+    {
+      "n": 1,
+      "kind": "initial",
+      "started_at": "2026-11-16T04:59:21.362Z",
+      "report": "global-sct/.agents/tasks/task-1b-worktree/attempts/FEAT-001-1.gate.json"
+    }
+  ],
   "blocked_reason": null,
   "findings": "Ready for dispatch through a T3 subagent (decision S4)."
 }
