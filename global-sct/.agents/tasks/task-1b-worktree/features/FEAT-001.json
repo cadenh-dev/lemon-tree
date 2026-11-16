@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Ticket W1B-1. Implement the WorktreeManager contract in src/main/worktree-manager.ts with real git commands: create, autoCommit, diffSummary, merge, discard, and openInEditor.",
-  "status": "dispatched",
+  "status": "verifying",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -123,10 +123,10 @@
     "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
   },
   "worktree": {
-    "path": "",
+    "path": "/home/cadenh/.t3/worktrees/lemon-tree/t3-1a6dbe31",
     "branch": "agent/task-1b-worktree/FEAT-001",
-    "base_commit": "1bcbd55384d92687df33f1a8239fa51a3de7e633",
-    "head_commit": null
+    "base_commit": "51cebdf48b68d44477dcb084d870daa2c05efcf2",
+    "head_commit": "513225852187830028e93425c44fbc253f10a468"
   },
   "attempts": [
     {
