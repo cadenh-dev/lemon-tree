@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Ticket W1B-1. Implement the WorktreeManager contract in src/main/worktree-manager.ts with real git commands: create, autoCommit, diffSummary, merge, discard, and openInEditor.",
-  "status": "verifying",
+  "status": "completed",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -133,9 +133,9 @@
       "n": 1,
       "kind": "initial",
       "started_at": "2026-11-16T04:59:21.362Z",
-      "report": "global-sct/.agents/tasks/task-1b-worktree/attempts/FEAT-001-1.gate.json"
+      "report": "t3-ubuntu:/home/caden/lt-wt/W1B-1.gate.json"
     }
   ],
   "blocked_reason": null,
-  "findings": "Ready for dispatch through a T3 subagent (decision S4)."
+  "findings": "Completed on 2026-11-15 in 1 attempt. Worker: opencode-go/deepseek-v4.1-flash, variant high, as a T3 subagent on this machine (decision S4); it ran typecheck and lint only. Files changed: global-sct/src/main/worktree-manager.ts (196 lines) and global-sct/tests/worktree-manager.test.ts (10 tests, real temporary repositories). Gate C ran on t3-ubuntu (Bun 1.4.4) at 5132258 against base 51cebdf and passed: pins, scope, prepare, typecheck, lint, test, test-substance (the new tests fail on the base), verification, secret-scan. The ui check does not apply. The lead read the full diff and each test: each git call uses an argument array, the job id is checked before git runs, and a failed merge is aborted. Merge commit on wave/1: c4bfc02. The lead added the test file to the test script in global-sct/package.json."
 }
