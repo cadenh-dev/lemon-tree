@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "lt-coder",
+  "share": "disabled",
+  "update": "disable",
+  "instructions": [
+    "AGENTS.md",
+    "global-sct/AGENTS.md"
+  ]
+}

@@ -38,7 +38,9 @@
       "global-sct/.github/**",
       "global-sct/.opencode/**",
       "global-sct/opencode.json",
-      "docs/**"
+      "docs/**",
+      ".opencode/**",
+      "opencode.json"
     ],
     "max_files": 12,
     "max_lines": 600
