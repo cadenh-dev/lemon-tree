@@ -20,7 +20,6 @@ export type InvokeChannels = {
   'job:cancel': Channel<[jobId: string], void>
   'job:list': Channel<[threadId: string | null], ControlPlaneJobRecord[]>
   'job:get': Channel<[jobId: string], ControlPlaneJobRecord | null>
-  'job:events': Channel<[request: JobSyncRequest], JobSyncResponse>
   'permission:respond': Channel<[decision: PermissionDecision], void>
   'worktree:diff': Channel<[jobId: string], DiffSummary>
   'worktree:commit': Channel<[jobId: string, message: string], AutoCommitResult>
@@ -38,6 +37,7 @@ export type InvokeChannels = {
   'memory:recall': Channel<[projectId: string], ProjectMemory>
   'vault:audit': Channel<[limit: number], SecretAuditEntry[]>
   'peers:list': Channel<[], PeerInfo[]>
+  // The one channel that reads job events. A second channel, job:events, had the same request and response and was removed.
   'job:sync': Channel<[request: JobSyncRequest], JobSyncResponse>
   'threads:sync': Channel<[request: ThreadSyncRequest], ThreadSyncResponse>
 }
