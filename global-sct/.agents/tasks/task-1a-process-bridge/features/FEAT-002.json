@@ -3,7 +3,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Ticket W1A-2. Add classifyPrompt in src/main/process-bridge/classify-prompt.ts: a deterministic TypeScript mapping from a user prompt to a PromptIntent (role, depth, evidence). It classifies the prompt text. It is not a process-role classifier and it calls no model.",
-  "status": "dispatched",
+  "status": "verifying",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -108,10 +108,10 @@
     "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
   },
   "worktree": {
-    "path": "",
+    "path": "/home/cadenh/.t3/worktrees/lemon-tree/t3-2d5f5298",
     "branch": "agent/task-1a-process-bridge/FEAT-002",
-    "base_commit": "00f2cece6f6c3b3efb0210eebc3d3402e7655ecd",
-    "head_commit": null
+    "base_commit": "b058d1d919bedbc6dd14e9644c03c1ed19617a14",
+    "head_commit": "b05a61ffb45a2d979df740832c9aba29f31b96e6"
   },
   "attempts": [
     {
