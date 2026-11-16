@@ -1,0 +1,4 @@
+#!/bin/sh
+# $3 is 1 for a branch checkout and 0 for a file checkout.
+[ "$3" = 1 ] || exit 0
+exec "$(dirname "$0")/pin-event" "$1" "$2"

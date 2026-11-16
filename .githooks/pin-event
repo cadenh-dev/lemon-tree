@@ -1,0 +1,16 @@
+#!/bin/sh
+# Records a pin event when a file that defines the pins or the dependencies changed between two commits.
+# The lead reads the event file before the next dispatch (bun scripts/orc/impact.ts status). No file watcher is used.
+old="$1"
+new="$2"
+[ -n "$old" ] && [ -n "$new" ] && [ "$old" != "$new" ] || exit 0
+changed=$(git diff --name-only "$old" "$new" -- pins.json global-sct/package.json global-sct/bun.lock 'global-sct/packages/*/package.json' global-sct/src/shared/contracts.ts 2>/dev/null)
+[ -n "$changed" ] || exit 0
+root=$(git rev-parse --show-toplevel)
+mkdir -p "$root/global-sct/.agents/orchestration"
+{
+  printf '{\n  "event": "pin-moved",\n  "old": "%s",\n  "new": "%s",\n  "at": "%s",\n  "files": [' "$old" "$new" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '%s\n' "$changed" | sed 's/.*/"&"/' | paste -sd, -
+  printf ']\n}\n'
+} > "$root/global-sct/.agents/orchestration/pin-event.json"
+echo "lemon-tree: a pin or dependency file changed. Run 'bun run pins' and 'bun scripts/orc/impact.ts status' before the next dispatch." >&2

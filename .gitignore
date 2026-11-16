@@ -5,3 +5,6 @@ graphify-out/
 out/
 dist/
 test-results/
+global-sct/.agents/orchestration/pin-event.json
+global-sct/.agents/orchestration/freeze.json
+global-sct/.agents/orchestration/worktrees/
