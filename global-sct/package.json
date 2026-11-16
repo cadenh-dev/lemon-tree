@@ -31,7 +31,7 @@
     "lint": "eslint . --max-warnings 0",
     "relay:generate": "spacetime generate --lang typescript --out-dir src/main/relay --module-path packages/relay --yes",
     "react-doctor": "react-doctor --scope full --blocking error",
-    "test": "cd tests && bun test projects.test.ts vault.test.ts runtime.test.ts sharing.test.ts envelope.test.ts harnesses.test.ts workspace-link.test.ts boundary.test.ts",
+    "test": "cd tests && bun test projects.test.ts vault.test.ts runtime.test.ts sharing.test.ts envelope.test.ts harnesses.test.ts workspace-link.test.ts boundary.test.ts direct-frame.test.ts share-gate.test.ts",
     "test:ui": "bun run build && cd tests && playwright test --config ../playwright.config.ts"
   },
   "dependencies": {

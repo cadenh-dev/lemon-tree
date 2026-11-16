@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "test",
   "description": "Ticket T-3. Add unit tests for the Direct frame codec in src/main/direct-frame.ts: FrameReader, encodeFrame, transferBody, and readTransferBody. The product code does not change.",
-  "status": "dispatched",
+  "status": "completed",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -133,7 +133,7 @@
     "path": "/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001",
     "branch": "agent/task-transport-tests/FEAT-001",
     "base_commit": "14a07e76876f30b44d9457f0f2167a0d7a6b9ecc",
-    "head_commit": null
+    "head_commit": "531718c"
   },
   "attempts": [
     {
@@ -144,5 +144,5 @@
     }
   ],
   "blocked_reason": null,
-  "findings": "Pilot ticket 1 of 2. Ready for dispatch."
+  "findings": "Completed on 2026-11-15 in 1 attempt. Worker: opencode-go/deepseek-v4.1-flash, variant high, through the OpenCode CLI with the lt-coder agent (before decision S4). File changed: global-sct/tests/direct-frame.test.ts (7 tests). Gate C ran on t3-ubuntu (Bun 1.4.4) at 531718c and passed: pins, scope, prepare, typecheck, lint, test, test-substance (all 5 lead mutations made a new test fail), verification, secret-scan. The ui check does not apply. The runner (codex gpt-6-luna) returned the report JSON; the report file is on the VM at /home/caden/lt-wt/FEAT-001.gate.json. The lead read the full diff and each test: each test calls the real code and asserts behavior. Merge commit on wave/T: 578eb9f. The lead added the file to the test script in global-sct/package.json."
 }
