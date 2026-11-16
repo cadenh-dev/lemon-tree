@@ -1,5 +1,11 @@
 # Lemon Tree overrides (take precedence over everything below)
 
+Precedence note. When a rule in "Existing project rules" or "Complex Logic" disagrees with an override, the override wins:
+
+- Tests: override 1 applies to each ticket. A ticket adds the tests for its own module and does not ask for approval. "Do not add tests unless I approve" applies only to a change of an existing test, which needs an approval in the ticket.
+- Schemas: Zod is the schema library. The lines about Effect and Effect Schema below do not apply.
+- Decisions: "Do not make decisions for yourself" applies to the lead, who asks the user. A delegate follows its ticket (override 3) and writes a `SCOPE REQUEST` when the ticket is not sufficient.
+
 1. Each implementation wave writes and runs verification tests for its own module. The test approval rule below does not apply.
 2. Typecheck through the package scripts (`bun run typecheck`, `bun run typecheck:tsc`). Briefs that say `tsc --noEmit` mean these scripts.
 3. Delegates follow their wave brief and file ownership without stopping for per-step approval. Changes to `src/shared/contracts.ts`, `src/shared/acp-types.ts`, `src/shared/ipc-channels.ts`, `src/shared/harness-manifest.ts`, `harnesses.json`, or `package.json` dependencies are escalated to the lead, not made directly.
