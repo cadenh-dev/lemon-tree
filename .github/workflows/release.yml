@@ -12,12 +12,17 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+defaults:
+  run:
+    working-directory: global-sct
+
 jobs:
   validate:
     name: Validate tag
     runs-on: ubuntu-latest
     steps:
       - name: Require an unsigned beta tag
+        working-directory: .
         run: |
           if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]; then
             echo "Use a beta tag such as v0.1.0-beta.1. Stable tags need signing."
@@ -36,6 +41,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
+      - name: Materialize the pinned clones and build agtop
+        working-directory: .
+        run: bun run pins
       - run: bun install --frozen-lockfile
       - name: Set version from tag
         run: bun scripts/set-version.ts
@@ -52,7 +60,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: macos
-          path: dist/global.sct-macos-arm64-*.dmg
+          path: global-sct/dist/global.sct-macos-arm64-*.dmg
           if-no-files-found: error
           retention-days: 1
 
@@ -68,6 +76,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
+      - name: Materialize the pinned clones and build agtop
+        working-directory: .
+        run: bun run pins
       - run: bun install --frozen-lockfile
       - name: Set version from tag
         run: bun scripts/set-version.ts
@@ -80,7 +91,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: windows
-          path: dist/global.sct-windows-x64-*.zip
+          path: global-sct/dist/global.sct-windows-x64-*.zip
           if-no-files-found: error
           retention-days: 1
 
@@ -96,6 +107,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
+      - name: Materialize the pinned clones and build agtop
+        working-directory: .
+        run: bun run pins
       - run: bun install --frozen-lockfile
       - name: Set version from tag
         run: bun scripts/set-version.ts
@@ -107,7 +121,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: linux
-          path: dist/global.sct-linux-x64-*.tar.gz
+          path: global-sct/dist/global.sct-linux-x64-*.tar.gz
           if-no-files-found: error
           retention-days: 1
 
@@ -126,6 +140,7 @@ jobs:
         working-directory: release
         run: sha256sum global.sct-* > SHA256SUMS.txt
       - name: Write release notes
+        working-directory: .
         run: |
           cat > release-notes.md <<EOF
           Unsigned beta release ${GITHUB_REF_NAME}.
@@ -140,6 +155,7 @@ jobs:
           The macOS build has an ad-hoc signature and no notarization.
           EOF
       - name: Publish release
+        working-directory: .
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

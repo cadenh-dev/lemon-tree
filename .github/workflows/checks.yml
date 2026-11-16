@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: global-sct
+
 jobs:
   verify:
     name: ${{ matrix.name }}
@@ -36,6 +40,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
+      - name: Materialize the pinned clones and build agtop
+        working-directory: .
+        run: bun run pins
       - run: bun install --frozen-lockfile
       - name: ${{ matrix.name }}
         run: ${{ matrix.command }}
@@ -55,7 +62,17 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
+      - name: Materialize the pinned clones and build agtop
+        working-directory: .
+        run: bun run pins
       - run: bun install --frozen-lockfile
+      - name: Pin check
+        working-directory: .
+        run: bun run pins:check
+      - name: Orchestration gate tests and task records
+        if: runner.os == 'Linux'
+        working-directory: .
+        run: bun run test:orc && bun run orc:validate
       - name: Lint and type check
         run: bun run check
       - name: TypeScript compiler
@@ -66,7 +83,7 @@ jobs:
         run: bun run build
       - name: Windows UI smoke test
         if: runner.os == 'Windows'
-        working-directory: tests
+        working-directory: global-sct/tests
         run: bunx playwright test platform.spec.ts --config ../playwright.config.ts
       - name: React Doctor
         run: bun run react-doctor
@@ -91,6 +108,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
+      - name: Materialize the pinned clones and build agtop
+        working-directory: .
+        run: bun run pins
       - run: bun install --frozen-lockfile
       - name: Package
         run: ${{ matrix.command }}
@@ -106,6 +126,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
+      - name: Materialize the pinned clones and build agtop
+        working-directory: .
+        run: bun run pins
       - run: bun install --frozen-lockfile
       - name: React Doctor
         run: bun run react-doctor
