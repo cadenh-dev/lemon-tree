@@ -1,0 +1,45 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Record the baseline before changes. Run the project checks on the current shared checkout so that later failures can be separated from failures that already exist. Do not change any repository file.",
+  "status": "completed",
+  "steps": [
+    "From the repository root C:\\Users\\minisforum-zach\\Documents\\global.sct, run `git status --short` and save the list in findings.",
+    "Run `bun run check` and record pass or fail with the first errors.",
+    "Run `bun run test` and record pass, fail, and skip counts.",
+    "Run `bun run typecheck:tsc` and record the result.",
+    "Run `bun run build` and record the result (this also produces out/ for the Playwright tests).",
+    "Run `bun run react-doctor` and record the score and any errors.",
+    "From tests/, run `bunx playwright test --config ../playwright.config.ts platform.spec.ts` and record the result.",
+    "From tests/, run `bunx playwright test --config ../playwright.config.ts theme.spec.ts` (this file exists from the canceled run) and record the result."
+  ],
+  "acceptance_criteria": [
+    "findings lists the git status and the result of each command",
+    "No repository file changed (except this feature file)"
+  ],
+  "verification": [
+    "bun run check",
+    "bun run test",
+    "bun run typecheck:tsc",
+    "bun run build",
+    "bun run react-doctor",
+    "cd tests; bunx playwright test --config ../playwright.config.ts platform.spec.ts"
+  ],
+  "blocked_reason": null,
+  "findings": {
+    "summary": "Baseline recorded on 11/4/2026 near 4:15 PM. No repository file changed. All type errors come from src/main/sharing.ts and src/main/transport.ts, which the concurrent task-c8d-transport-receipt edits. None of the errors are in files of this task.",
+    "git_status_short": {
+      "modified": [".github/workflows/checks.yml", ".github/workflows/release.yml", ".hallmark/preflight.json", "AGENTS.md", "README.md", "bun.lock", "docs/agent-access.md", "docs/architecture.md", "docs/fork-plan.md", "docs/glossary.md", "docs/implementation-plan.md", "docs/relay.md", "docs/runtime-injection.md", "docs/secure-sharing-check.md", "docs/sharing.md", "docs/storage-design.md", "docs/storage.md", "package.json", "packages/env/README.md", "packages/env/src/index.ts", "scripts/install-cli.ts", "src/main/agent-access.ts", "src/main/caller.ts", "src/main/envelope.ts", "src/main/index.ts", "src/main/launch.ts", "src/main/mcp.ts", "src/main/relay-connection.ts", "src/main/runtime.ts", "src/main/sharing.ts", "src/main/vault.ts", "src/preload/index.ts", "src/renderer/src/AgentAccessView.tsx", "src/renderer/src/App.tsx", "src/renderer/src/CardsView.tsx", "src/renderer/src/ProjectSecretsView.tsx", "src/renderer/src/ProjectsView.tsx", "src/renderer/src/SharingMotion.tsx", "src/renderer/src/SharingView.tsx", "src/renderer/src/StorageView.tsx", "src/renderer/src/UnlockView.tsx", "src/renderer/src/main.tsx", "src/renderer/src/styles.css", "src/shared/agent.ts", "src/shared/api.ts", "tests/app.spec.ts", "tests/envelope.test.ts", "tests/projects.test.ts", "tests/runtime.test.ts", "tests/sharing.spec.ts", "tests/sharing.test.ts", "tests/vault.test.ts"],
+      "untracked": [".agents/", "docs/media/themes/", "docs/theme.md", "docs/windows-linux-signing.md", "docs/windows-linux.md", "packages/env/src/executable.ts", "packages/vscode/", "scripts/build-airdrop.ts", "scripts/package-linux.ts", "scripts/package-windows.ts", "scripts/set-version.ts", "src/main/preferences.ts", "src/main/transport.ts", "src/shared/transport.ts", "tests/platform.spec.ts", "tests/theme.spec.ts", "tests/ui.ts"]
+    },
+    "bun_run_check": "FAIL. eslint passed (--max-warnings 0). bun check -p tsconfig.node.json found 22 errors in 2 files: 21 in src/main/sharing.ts, 1 in src/main/transport.ts. First errors: sharing.ts(11,15) TS2300 Duplicate identifier 'EnvelopeTransferInput'; sharing.ts(14,29) TS2300 same; sharing.ts(74,12) TS2304 Cannot find name 'previewSealed'; sharing.ts(83,3) TS2393 Duplicate function implementation; sharing.ts(85,25) TS2304 Cannot find name 'envelopePeer'; sharing.ts(85,38) TS2304 Cannot find name 'requireRecipient'; sharing.ts(109,14) TS2304 Cannot find name 'verifyTransferReceipt'; sharing.ts(148,76) TS2339 Property 'recipientId' does not exist on type 'EnvelopeTransferInput'; transport.ts(9,22) TS2322 Type '{ receivedAt: number; secretCount: number; state: \"received\"; }' is not assignable to type 'ReceiptState' (property 'receipt' is missing). The web, relay, and vscode configs did not run because the node config failed first.",
+    "bun_run_test": "FAIL. 37 pass, 3 skip, 1 fail, 41 tests in 5 files. Failure: sharing.test.ts 'relay delivery imports once, preserves grant rules, and returns a verified receipt' with ReferenceError: previewSealed is not defined at previewRelayTransfer (src/main/sharing.ts:74:12), called from tests/sharing.test.ts:160:43. Skipped on win32 (POSIX only): 'CLI selection follows cwd and saved changes restart the whole command group', 'the SDK loads and refreshes values through the real vault without holding a finished app open', 'the terminal entrypoint forwards interruption and termination to the command'.",
+    "bun_run_typecheck_tsc": "FAIL. Same 22 errors as bun run check, from the official compiler on tsconfig.node.json, in src/main/sharing.ts and src/main/transport.ts. Later configs did not run.",
+    "bun_run_build": "FAIL. The build stops at its first step, typecheck:tsc, with the same errors. electron-vite build did not run. out/main/index.js and out/renderer/index.html already had a write time of 4:12:24 PM (from an earlier build, probably by the other task), and the Playwright runs below used that output.",
+    "bun_run_react_doctor": "PASS. Score 100 / 100, no issues, 87 files scanned.",
+    "playwright_platform_spec": "PASS (1 passed, 1.7s) after the environment fix below. The first run failed with 'Error: Process failed to launch!'.",
+    "playwright_theme_spec": "PASS (1 passed, 12.1s): 'Cream is the default and the selected theme stays after a restart'.",
+    "environment_issue": "The agent shell inherits ELECTRON_RUN_AS_NODE=1 from the host Electron app. With it, electron.exe runs as plain Node and tests/electron-entry.cjs fails with 'TypeError: Cannot read properties of undefined (reading setPath)' at line 3, which Playwright reports as 'Process failed to launch!'. Fix: run `Remove-Item Env:ELECTRON_RUN_AS_NODE` in the same PowerShell command before every Playwright test or screenshot script. This change applies only to that process.",
+    "notes_for_feat_002": "Expect bun run check, bun run test, bun run typecheck:tsc, and bun run build to fail on sharing.ts and transport.ts until task-c8d-transport-receipt finishes. Compare new failures with this list. Because bun run build cannot finish now, out/ will not include new styles.css changes unless the build passes or the other task rebuilds. Record this if it stays so. test-results/ and out/ are git-ignored."
+  }
+}

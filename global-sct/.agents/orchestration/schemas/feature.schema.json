@@ -1,0 +1,403 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lemon-tree/orc/feature.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "type",
+    "description",
+    "status",
+    "depends_on",
+    "scope",
+    "contracts",
+    "steps",
+    "acceptance_criteria",
+    "verification",
+    "tests",
+    "budget",
+    "route",
+    "attempts",
+    "blocked_reason",
+    "findings"
+  ],
+  "properties": {
+    "schema": {
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^FEAT-[0-9]{3}$"
+    },
+    "type": {
+      "enum": [
+        "feat",
+        "fix",
+        "test",
+        "chore",
+        "docs"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 800
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "ready",
+        "dispatched",
+        "verifying",
+        "repair",
+        "review",
+        "completed",
+        "blocked",
+        "stale",
+        "superseded"
+      ]
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allow",
+        "deny",
+        "max_files",
+        "max_lines"
+      ],
+      "properties": {
+        "allow": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Globs relative to the repository root. The only paths the diff can touch."
+        },
+        "deny": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Always includes the global deny list in deny.json."
+        },
+        "max_files": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "max_lines": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        }
+      }
+    },
+    "unlocks": {
+      "type": "array",
+      "description": "Written only by the lead. Each entry moves one locked file from deny to allow for this ticket.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "change",
+          "approved_by",
+          "approved_at"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "change": {
+            "type": "string",
+            "description": "The exact permitted change, for example: add optional field `capabilities?: CapabilityId[]` to HarnessManifestEntry."
+          },
+          "approved_by": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The provider and model id of the lead that approved the unlock, for example claudeAgent/claude-fable-5-2."
+          },
+          "approved_at": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "maxItems": 12,
+      "description": "Exact type signatures the worker needs. Copied by script from the cited commit.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "symbol",
+          "repo",
+          "path",
+          "startLine",
+          "endLine",
+          "sha256",
+          "text",
+          "role"
+        ],
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "repo": {
+            "enum": [
+              "workspace",
+              "agtop",
+              "toolkit"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "startLine": {
+            "type": "integer"
+          },
+          "endLine": {
+            "type": "integer"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 2500
+          },
+          "role": {
+            "enum": [
+              "implement",
+              "call",
+              "extend",
+              "read-only"
+            ]
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "maxLength": 600
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "verification": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "Commands, each one argv with no shell operators. Run from context.commands.cwd."
+    },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "must_add",
+        "min_cases"
+      ],
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "must_add": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "One line per required test case, stated as behavior."
+        },
+        "min_cases": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "researchRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^RP-[0-9]{4}/C[0-9]{1,3}$"
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_tokens",
+        "wall_clock_minutes"
+      ],
+      "properties": {
+        "context_tokens": {
+          "type": "integer",
+          "maximum": 24000
+        },
+        "wall_clock_minutes": {
+          "type": "integer",
+          "maximum": 45
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "providerInstanceId",
+        "model",
+        "options",
+        "classified_by",
+        "policy_hash"
+      ],
+      "properties": {
+        "providerInstanceId": {
+          "const": "opencode"
+        },
+        "model": {
+          "const": "opencode-go/deepseek-v4.1-flash"
+        },
+        "options": {
+          "type": "object"
+        },
+        "classified_by": {
+          "enum": [
+            "toolkit-select-target",
+            "lead-pinned"
+          ]
+        },
+        "policy_hash": {
+          "type": "string",
+          "description": "SHA-256 of routing-policy.json at the toolkit pin."
+        }
+      }
+    },
+    "worktree": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string",
+          "pattern": "^agent/task-[a-z0-9-]+/FEAT-[0-9]{3}$"
+        },
+        "base_commit": {
+          "type": "string"
+        },
+        "head_commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n",
+          "kind",
+          "started_at",
+          "report"
+        ],
+        "properties": {
+          "n": {
+            "enum": [
+              1,
+              2,
+              3
+            ]
+          },
+          "kind": {
+            "enum": [
+              "initial",
+              "repair"
+            ]
+          },
+          "started_at": {
+            "type": "string"
+          },
+          "report": {
+            "type": "string",
+            "description": "Path to the Gate C report JSON for this attempt."
+          }
+        }
+      }
+    },
+    "blocked_reason": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "retryable",
+        "detail"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "gate-failed-3",
+            "scope-violation",
+            "contract-unlock-needed",
+            "upstream-drift",
+            "stale-pins",
+            "provider-limit",
+            "offpeak-deferred",
+            "needs-user-decision"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "findings": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "schema": 2,
+  "id": "FEAT-003",
+  "type": "test",
+  "description": "Ticket T-2. Add the two approved C8d tests to tests/sharing.test.ts: one device-ID round trip (prepareEnvelope, previewEnvelope, acceptEnvelope two times, verifyEnvelopeReceipt) and one receipt rejection case. The user approved this change to an existing test file in the C8d task.",
+  "status": "draft",
+  "depends_on": [],
+  "supersedes": "FEAT-002",
+  "scope": {
+    "allow": [
+      "global-sct/tests/sharing.test.ts"
+    ],
+    "deny": [
+      "global-sct/src/shared/contracts.ts",
+      "global-sct/src/shared/acp-types.ts",
+      "global-sct/src/shared/ipc-channels.ts",
+      "global-sct/src/shared/harness-manifest.ts",
+      "global-sct/harnesses.json",
+      "global-sct/package.json",
+      "global-sct/bun.lock",
+      "global-sct/tsconfig*.json",
+      "global-sct/src/main/agtop-type-check.ts",
+      "global-sct/src/shared/boundary.ts",
+      "global-sct/src/shared/boundary-schemas.ts",
+      "global-sct/eslint.config.mjs",
+      "global-sct/AGENTS.md",
+      "AGENTS.md",
+      "pins.json",
+      "pins.lock.json",
+      "scripts/**",
+      "package.json",
+      "agtop/**",
+      "subagentclassifiertoolkit/**",
+      "global-sct/.agents/**",
+      ".github/**",
+      "global-sct/.github/**",
+      "global-sct/.opencode/**",
+      "global-sct/opencode.json",
+      "docs/**"
+    ],
+    "max_files": 1,
+    "max_lines": 200
+  },
+  "contracts": [],
+  "steps": [
+    "Read tests/sharing.test.ts and the envelope methods of src/main/sharing.ts.",
+    "Add the round-trip test.",
+    "Add the receipt rejection test.",
+    "Run each command in verification."
+  ],
+  "acceptance_criteria": [
+    "tests/sharing.test.ts has exactly two new tests",
+    "The round-trip test uses the real Sharing class and a real vault, with no mock",
+    "The second accept of the same envelope does not import the transfer again",
+    "The rejection test shows that a receipt for a different transfer or device is refused",
+    "bun run typecheck:tsc, bun run lint, and bun run test pass"
+  ],
+  "verification": [
+    "bun run typecheck:tsc",
+    "bun run lint",
+    "bun run test"
+  ],
+  "tests": {
+    "files": [
+      "global-sct/tests/sharing.test.ts"
+    ],
+    "must_add": [
+      "A device-ID envelope goes through prepare, preview, accept, a second accept, and receipt verification",
+      "A receipt that does not match the transfer is rejected"
+    ],
+    "min_cases": 2
+  },
+  "budget": {
+    "context_tokens": 24000,
+    "wall_clock_minutes": 30
+  },
+  "route": {
+    "providerInstanceId": "opencode",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "options": {
+      "variant": "high"
+    },
+    "classified_by": "lead-pinned",
+    "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
+  },
+  "worktree": null,
+  "attempts": [],
+  "blocked_reason": null,
+  "findings": "Draft. The lead adds contracts by script and moves the ticket to ready before dispatch."
+}

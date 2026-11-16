@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lemon-tree/orc/context.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "task_id",
+    "wave",
+    "base",
+    "pins",
+    "language",
+    "build_system",
+    "test_framework",
+    "commands",
+    "rules",
+    "relevant_files",
+    "locked_files"
+  ],
+  "properties": {
+    "schema": {
+      "const": 2
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^task-[a-z0-9-]+$"
+    },
+    "wave": {
+      "enum": [
+        "0",
+        "1A",
+        "1B",
+        "1C",
+        "1D",
+        "2A",
+        "2B",
+        "3",
+        "T",
+        "V",
+        "U",
+        "P",
+        "Q"
+      ]
+    },
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "branch"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "branch": {
+          "type": "string"
+        }
+      }
+    },
+    "pins": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agtop",
+        "toolkit",
+        "fingerprint"
+      ],
+      "properties": {
+        "agtop": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "toolkit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "language": {
+      "const": "TypeScript (no `any`)"
+    },
+    "build_system": {
+      "type": "string"
+    },
+    "test_framework": {
+      "type": "string"
+    },
+    "commands": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cwd",
+        "typecheck",
+        "lint",
+        "test"
+      ],
+      "properties": {
+        "cwd": {
+          "const": "global-sct"
+        },
+        "typecheck": {
+          "const": "bun run typecheck:tsc"
+        },
+        "lint": {
+          "const": "bun run lint"
+        },
+        "test": {
+          "const": "bun run test"
+        },
+        "build": {
+          "const": "bun run build"
+        },
+        "ui": {
+          "type": "string"
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "description": "The AGENTS.md rules that apply to this task, already resolved for precedence."
+    },
+    "relevant_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 25
+    },
+    "locked_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "key_patterns": {
+      "type": "string",
+      "maxLength": 3000
+    },
+    "environment_constraints": {
+      "type": "string",
+      "maxLength": 1500
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "CapabilityId values present at these pins. A step must not use a missing capability."
+    }
+  }
+}

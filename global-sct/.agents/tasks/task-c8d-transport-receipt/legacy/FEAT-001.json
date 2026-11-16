@@ -1,0 +1,22 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Record the baseline of the shared working tree before C8d changes. The tree has uncommitted work from other tasks, so record any existing failures and do not fix them.",
+  "status": "completed",
+  "steps": [
+    "From the repository root, run `git status --short` and save the list of changed files in findings, so later steps can show which files this task changed.",
+    "Run `bun run check`, `bun run test`, and `bun run typecheck:tsc` from the repository root. Record pass or fail and any error lines in findings.",
+    "Do not edit any file in this feature."
+  ],
+  "acceptance_criteria": [
+    "findings contain the baseline result of each of the three commands",
+    "No file in the working tree changed"
+  ],
+  "verification": [
+    "bun run check",
+    "bun run test",
+    "bun run typecheck:tsc"
+  ],
+  "blocked_reason": null,
+  "findings": "Baseline (run by the planner, no edits): bun run check passed (eslint 0 warnings; bun check: 64, 22, and 1 files with no type errors). bun run test: 37 pass, 3 skip, 0 fail across 5 files. bun run typecheck:tsc: exit code 0. Pre-existing modified files (other work, keep): .github/workflows/*, .hallmark/preflight.json, AGENTS.md, README.md, docs/* (many), package.json, packages/env/*, scripts/install-cli.ts, src/main/{agent-access,caller,index,launch,mcp,relay-connection,runtime,sharing,vault}.ts, src/preload/index.ts, src/renderer/src/*, src/shared/{agent,api}.ts, tests/{app.spec,projects.test,runtime.test,sharing.spec,sharing.test,vault.test}.ts. Untracked: docs/media/themes/, docs/theme.md, docs/windows-linux*.md, scripts/{build-airdrop,package-linux,package-windows,set-version}.ts, src/main/preferences.ts, tests/platform.spec.ts, tests/ui.ts."
+}

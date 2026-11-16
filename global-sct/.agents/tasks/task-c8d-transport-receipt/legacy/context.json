@@ -1,0 +1,29 @@
+{
+  "project_type": ".sct: Electron desktop app (main, preload, renderer) with a SpacetimeDB relay module in packages/relay and an SDK in packages/env",
+  "language": "TypeScript (no `any`)",
+  "build_system": "Bun 1.4.4+ with electron-vite. Scripts in the root package.json",
+  "test_framework": "node:test with node:assert/strict, run by `bun test` from the tests/ directory (root script `bun run test`)",
+  "build_command": "bun run check (lint + bun check typecheck) and bun run typecheck:tsc (official compiler, source of truth)",
+  "test_command": "bun run test (runs: cd tests && bun test projects.test.ts vault.test.ts runtime.test.ts sharing.test.ts envelope.test.ts)",
+  "verification_instructions": "From the repository root: `bun run check`, `bun run test`, `bun run typecheck:tsc`. Use `bun typecheck` for quick focused checks. Never run tsc directly.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "Dependencies are installed (node_modules present). If missing, run `bun install` from the root. Do not change package.json or bun.lock.",
+  "environment_constraints": "Windows, PowerShell. Shared working tree with many uncommitted changes from other work (src/main/sharing.ts, src/main/relay-connection.ts, tests/sharing.test.ts, docs, AGENTS.md, package.json, renderer files, and others). Keep all those changes. Edit only the files that this task needs. Do not commit. Do not change AGENTS.md, decision tables in docs, package versions, or release files.",
+  "contribution_requirements": "AGENTS.md: ASD-STE100 style for comments and reports; no `any`; shared types in one file; inline single-use values; the main function shows the success path and helpers go below it; no single-use helpers for simple expressions; comments only for constraints and surprising behavior; no tests other than the approved ones; prefer Effect Schema helpers over JSON.parse for untrusted JSON.",
+  "key_patterns": "src/main/envelope.ts seals and opens the sct-relay v1 X25519 envelope (sealTransfer, openTransfer, sealReceipt, openReceipt, readReceipt is private). The `identity` field of RelaySelf/RelayPeerKeys is a 64-hex string checked by isHex; describeDevice(card).id from src/main/transfer.ts is also 64 hex, so it can be the identity for Link and Direct (decision in docs/implementation-plan.md Phase 2 key decisions). Sharing (src/main/sharing.ts) holds peers in sharing/peers.json (readPeers, requirePeer by describeDevice(card).id) and the device identity via getIdentity(). The relay methods prepareRelayTransfer/previewRelayTransfer/acceptRelayTransfer/verifyRelayReceipt are the pattern to follow. Vault.importSecrets(projectId, secrets, transferId, beforeWrite, grant) is the replay check; relay uses `relay:${id}:${digest}`, the new path must use `envelope:${id}:${digest}`. src/main/relay-connection.ts computes RelayDeliveryState ('queued'|'sent'|'received'|'failed'|'expired', from src/shared/relay.ts) in deliveryState() and checks receipts in receiptError() through RelayCrypto (a Pick of Sharing).",
+  "relevant_files": [
+    "src/shared/transport.ts (new)",
+    "src/shared/envelope.ts",
+    "src/main/envelope.ts",
+    "src/main/sharing.ts",
+    "src/main/relay-connection.ts",
+    "src/shared/relay.ts (read only, RelayDeliveryState)",
+    "src/main/transfer.ts (read only, describeDevice, DeviceCard)",
+    "src/main/vault.ts (read only, importSecrets)",
+    "tests/sharing.test.ts",
+    "tests/envelope.test.ts",
+    "docs/implementation-plan.md (Phase 2, read only)",
+    "docs/fork-plan.md (delivery modes, read only)"
+  ],
+  "directory_structure": "src/shared: types shared by main and renderer. src/main: Electron main process (crypto, vault, sharing, relay connection). src/renderer: React UI. packages/relay: SpacetimeDB module. tests: node:test unit tests and Playwright specs. docs: design and plan documents."
+}
