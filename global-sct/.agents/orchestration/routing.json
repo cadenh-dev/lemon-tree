@@ -92,8 +92,8 @@
       "status": "reachable",
       "coding": true,
       "research": true,
-      "hasProject": false,
-      "note": "opencode and antigravity can run child tasks. claudeAgent is not authenticated. No lemon-tree project exists there. Use is pending a user decision."
+      "hasProject": true,
+      "note": "Test machine (decision S4). See the testing section."
     },
     "t3-ubuntu": {
       "environmentId": "775b304a-37b8-471a-a9b4-5c1ac424ff46",
@@ -101,8 +101,8 @@
       "status": "reachable",
       "coding": true,
       "research": true,
-      "hasProject": false,
-      "note": "opencode and antigravity can run child tasks. claudeAgent is not authenticated. No lemon-tree project exists there. Use is pending a user decision."
+      "hasProject": true,
+      "note": "Test machine (decision S4). See the testing section."
     }
   },
   "testing": {
@@ -110,12 +110,15 @@
     "linux": {
       "environmentId": "775b304a-37b8-471a-a9b4-5c1ac424ff46",
       "projectId": "mcp:a5b0a85b-9a03-4789-b872-705afa297193",
-      "path": "/home/caden/lemon-tree"
+      "path": "/home/caden/lemon-tree",
+      "tools": "Bun 1.4.4 in ~/.bun/bin (prefix each command with export PATH=\"$HOME/.bun/bin:$PATH\"); git 2.53.0; Python 3.14.4; display, xvfb-run, Playwright"
     },
     "windows": {
       "environmentId": "eda5b895-30ee-4b64-9cfa-2a754aef873a",
+      "projectId": "mcp:e4a075d8-a2f5-4fcb-9691-481002fdbfe5",
       "path": "C:\\Users\\caden\\lemon-tree",
-      "status": "clone failed two times; diagnosis is in progress"
+      "tools": "Bun 1.4.4; portable MinGit 2.56.1 in C:\\Users\\caden\\tools\\mingit (user Path); no Python; no Node",
+      "pathRefresh": "$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')"
     },
     "runner": {
       "providerInstanceId": "codex",
