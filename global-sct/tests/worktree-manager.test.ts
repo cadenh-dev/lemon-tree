@@ -204,6 +204,8 @@ async function withRepos(body: (repos: TestRepos) => Promise<void>): Promise<voi
   await git(repo, ['init', '-b', 'main'])
   await git(repo, ['config', 'user.name', 'Test User'])
   await git(repo, ['config', 'user.email', 'test@example.com'])
+  // Git for Windows converts LF to CRLF on checkout by default. The tests compare exact file text.
+  await git(repo, ['config', 'core.autocrlf', 'false'])
   await writeFile(join(repo, 'seed.txt'), 'seed\n')
   await commitAll(repo, 'seed commit')
   try {

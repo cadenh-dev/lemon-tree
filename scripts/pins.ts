@@ -151,11 +151,20 @@ async function probeCapabilities(): Promise<CapabilitySet> {
 
 async function toolkitReason(capability: string, path: string) {
   if (capability !== "toolkit.select-target") return null;
-  if (Bun.which("python3") === null) return "python3 is not installed";
-  const help = await $`python3 ${resolve(dirOf("subagentclassifiertoolkit"), path)} --help`.nothrow().quiet();
+  // On Windows, `python3` can be a Store shim that exits with an error, and the real interpreter is `python`.
+  const python = await workingPython();
+  if (python === null) return "python is not installed";
+  const help = await $`${python} ${resolve(dirOf("subagentclassifiertoolkit"), path)} --help`.nothrow().quiet();
   if (help.exitCode !== 0) return `--help exited with ${help.exitCode}`;
   const absent = SELECT_TARGET_FLAGS.filter(name => !help.stdout.toString().includes(name));
   return absent.length === 0 ? null : `--help does not list ${absent.join(", ")}`;
+}
+
+async function workingPython() {
+  for (const name of ["python3", "python"]) {
+    if (Bun.which(name) !== null && (await $`${name} --version`.nothrow().quiet()).exitCode === 0) return name;
+  }
+  return null;
 }
 
 function requireCapabilities(set: CapabilitySet) {
