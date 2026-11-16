@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "pins": "bun scripts/pins.ts",
-    "pins:check": "bun scripts/pins.ts --check"
+    "pins:check": "bun scripts/pins.ts --check",
+    "test:orc": "cd scripts/orc/tests && bun test",
+    "orc:validate": "bun scripts/orc/validate.ts"
   }
 }

@@ -243,6 +243,39 @@
         "min_cases": {
           "type": "integer",
           "minimum": 0
+        },
+        "mutations": {
+          "type": "array",
+          "maxItems": 6,
+          "description": "Written only by the lead. Required for a ticket of type test. Each entry is one source change that must make at least one new test fail. `find` must occur one time in the file.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "find",
+              "replace"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "find": {
+                "type": "string",
+                "minLength": 1
+              },
+              "replace": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "allow_skips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Text of a skipped test that the ticket permits, for example a platform guard."
         }
       }
     },
