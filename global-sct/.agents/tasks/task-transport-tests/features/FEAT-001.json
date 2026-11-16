@@ -3,7 +3,7 @@
   "id": "FEAT-001",
   "type": "test",
   "description": "Ticket T-3. Add unit tests for the Direct frame codec in src/main/direct-frame.ts: FrameReader, encodeFrame, transferBody, and readTransferBody. The product code does not change.",
-  "status": "ready",
+  "status": "dispatched",
   "depends_on": [],
   "supersedes": null,
   "scope": {
@@ -129,8 +129,20 @@
     "classified_by": "lead-pinned",
     "policy_hash": "beae233dacae86a18711160d4a35c3bf56dd52cd52e4b09c3747a1135f5776e4"
   },
-  "worktree": null,
-  "attempts": [],
+  "worktree": {
+    "path": "/home/cadenh/.t3/worktrees/lemon-tree/orc-task-transport-tests-FEAT-001",
+    "branch": "agent/task-transport-tests/FEAT-001",
+    "base_commit": "14a07e76876f30b44d9457f0f2167a0d7a6b9ecc",
+    "head_commit": null
+  },
+  "attempts": [
+    {
+      "n": 1,
+      "kind": "initial",
+      "started_at": "2026-11-16T00:22:28.565Z",
+      "report": "global-sct/.agents/tasks/task-transport-tests/attempts/FEAT-001-1.gate.json"
+    }
+  ],
   "blocked_reason": null,
   "findings": "Pilot ticket 1 of 2. Ready for dispatch."
 }
