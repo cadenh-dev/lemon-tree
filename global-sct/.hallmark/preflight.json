@@ -1,9 +1,9 @@
 {
-  "scanned": "2026-10-24",
+  "scanned": "2026-11-15",
   "findings": {
     "fonts": "Martian Mono variable font",
     "palette": "OKLCH role tokens in src/renderer/src/styles.css",
-    "motion": "GSAP state motion with reduced-motion fallbacks",
+    "motion": "animejs 4.5.0 state motion in src/renderer/src/SharingMotion.tsx, with reduced-motion fallbacks",
     "spacing": "Existing square Terminal app system",
     "framework": "Electron, React, and TypeScript"
   },
