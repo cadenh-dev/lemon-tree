@@ -1,5 +1,7 @@
 # Lemon Tree workspace instructions
 
+> **Pivot (2026-11-18):** Lemon Tree is now an add-on to T3 Code. T3 Code stays an unmodified upstream. Read [docs/t3-addon-pivot.md](docs/t3-addon-pivot.md) first. It supersedes the Wave plan and the ownership matrix below, which stay as history until the removal ticket.
+
 The control plane lives in `global-sct/`. `agtop/` and `subagentclassifiertoolkit/` are pinned source clones; `global-sct/` is the committed fork archive. Pin URLs, SHAs, and paths are in `pins.json`; use `bun run pins` to materialize and build agtop, and `bun run pins:check` to verify without changing checkouts.
 
 Follow [global-sct/AGENTS.md](global-sct/AGENTS.md). Its ownership matrix is the section 6 wave ownership matrix.
